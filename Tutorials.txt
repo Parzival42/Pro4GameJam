@@ -1,0 +1,3 @@
+Multiple Controller handling:
+ - http://answers.unity3d.com/questions/702118/multiple-joystick-input.html
+ - https://github.com/anyuser/unity-input

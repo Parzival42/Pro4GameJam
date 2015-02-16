@@ -6,7 +6,7 @@ public class Enemy : MonoBehaviour {
 	private Transform enemy;
 
 	void Start () {
-		health = 100.00f;
+		health = 100;
 	}
 
 	public void TakeDamage(float damage){

@@ -8,6 +8,9 @@ public class SimplePlayer : MonoBehaviour
     public float movementSpeed = 10;
     PlayerManager pManager;
 
+    bool canShoot = true;
+    public float timeToShoot = 0.2f;
+
 	// Use this for initialization
 	void Start () 
     {
@@ -43,24 +46,35 @@ public class SimplePlayer : MonoBehaviour
         else if (Input.GetAxis(playerPrefix + "Vertical") < -0.1)
             rigidbody.AddForce(Vector3.forward * movementSpeed);
 
+        //Rotation
         if (Input.GetAxis(playerPrefix + "VerticalRotation") > 0.1 || Input.GetAxis(playerPrefix + "VerticalRotation") < -0.1 || Input.GetAxis(playerPrefix + "HorizontalRotation") > 0.1 || Input.GetAxis(playerPrefix + "HorizontalRotation") < -0.1)
         {
             Vector3 angle = new Vector3(0, Mathf.Atan2(Input.GetAxis(playerPrefix + "HorizontalRotation"), -Input.GetAxis(playerPrefix + "VerticalRotation")) * Mathf.Rad2Deg, 0);
             transform.rotation = Quaternion.Euler(angle);
         }
 
-        //Rotation
+        //Shoot
+        if (Input.GetAxis(playerPrefix + "Shoot") > 0.1 && canShoot)
+        {
+            GameObject obj = Instantiate(Resources.Load<GameObject>("Bullet")) as GameObject;
 
-
-        //if (Input.GetAxis(playerPrefix + "HorizontalRotation") > 0.1)
-        //{
+            BulletScript bullet = obj.GetComponent<BulletScript>();
+            bullet.Direction = transform.forward;
+            bullet.transform.position = transform.FindChild("BulletSpawnPoint").transform.position;
             
-        //}
-        //else if (Input.GetAxis(playerPrefix + "HorizontalRotation") < -0.1)
-        //{
-        //    deltaRot = Quaternion.Euler(rigidbody.rotation * -angle);
-        //    rigidbody.MoveRotation(deltaRot);
-        //}
+            bullet.name = "Bullet";
 
+            canShoot = false;
+            StartCoroutine(WaitForShoot());
+
+            //TODO: implement functionality in Bullet class
+            Destroy(obj, bullet.lifeTime);
+        }
+    }
+
+    IEnumerator WaitForShoot()
+    {
+        yield return new WaitForSeconds(timeToShoot);
+        canShoot = true;
     }
 }

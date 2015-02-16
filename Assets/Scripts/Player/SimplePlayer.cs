@@ -32,11 +32,9 @@ public class SimplePlayer : MonoBehaviour
     private void HandleInput()
     {
         
-
+        //Movement
         if (Input.GetAxis(playerPrefix + "Horizontal") > 0.1)
-        {
             rigidbody.AddForce(Vector3.right * movementSpeed);
-        }
         else if (Input.GetAxis(playerPrefix + "Horizontal") < -0.1)
             rigidbody.AddForce(-Vector3.right * movementSpeed);
 
@@ -44,6 +42,25 @@ public class SimplePlayer : MonoBehaviour
             rigidbody.AddForce(-Vector3.forward * movementSpeed);
         else if (Input.GetAxis(playerPrefix + "Vertical") < -0.1)
             rigidbody.AddForce(Vector3.forward * movementSpeed);
+
+        if (Input.GetAxis(playerPrefix + "VerticalRotation") > 0.1 || Input.GetAxis(playerPrefix + "VerticalRotation") < -0.1 || Input.GetAxis(playerPrefix + "HorizontalRotation") > 0.1 || Input.GetAxis(playerPrefix + "HorizontalRotation") < -0.1)
+        {
+            Vector3 angle = new Vector3(0, Mathf.Atan2(Input.GetAxis(playerPrefix + "HorizontalRotation"), -Input.GetAxis(playerPrefix + "VerticalRotation")) * Mathf.Rad2Deg, 0);
+            transform.rotation = Quaternion.Euler(angle);
+        }
+
+        //Rotation
+
+
+        //if (Input.GetAxis(playerPrefix + "HorizontalRotation") > 0.1)
+        //{
+            
+        //}
+        //else if (Input.GetAxis(playerPrefix + "HorizontalRotation") < -0.1)
+        //{
+        //    deltaRot = Quaternion.Euler(rigidbody.rotation * -angle);
+        //    rigidbody.MoveRotation(deltaRot);
+        //}
 
     }
 }

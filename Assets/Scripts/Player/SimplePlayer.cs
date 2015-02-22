@@ -9,11 +9,34 @@ public class SimplePlayer : MonoBehaviour
     PlayerManager pManager;
 
     bool canShoot = true;
+
+    //Tolerance of the analog stick.
+    private float analogStickTolerance = 0.1f;
+    
+    /*
+     * True: Player shoots automatically if the right analog stick is moved.
+     * False: Player has to shoot manually by pressing the shoot button.
+     */
+    public bool automaticShoot = false;
+
     public float timeToShoot = 0.2f;
+    public float rotationSpeed = 1f;
+
+    //Determines if the right stick is used or not.
+    private bool rightAnalogStickIsUsed = false;
+
+    //LineRenderer
+    public float lineLength = 15f;
 
 	// Use this for initialization
 	void Start () 
     {
+        LineRenderer line = gameObject.AddComponent<LineRenderer>();
+        line.material = new Material(Resources.Load<Material>("LineRendererMaterial"));
+        line.SetColors(Color.white, Color.black);
+        line.SetWidth(0.1f, 0.1f);
+        line.SetVertexCount(2);
+
         pManager = GameObject.FindObjectOfType<PlayerManager>();
         playerPrefix = pManager.PlayerPrefix;
         name =  pManager.PlayerPrefix + "Player";
@@ -24,7 +47,7 @@ public class SimplePlayer : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
     {
-        
+        DrawLine();
 	}
 
     void FixedUpdate()
@@ -34,34 +57,75 @@ public class SimplePlayer : MonoBehaviour
 
     private void HandleInput()
     {
-        
-        //Movement
-        if (Input.GetAxis(playerPrefix + "Horizontal") > 0.1)
-            rigidbody.AddForce(Vector3.right * movementSpeed);
-        else if (Input.GetAxis(playerPrefix + "Horizontal") < -0.1)
-            rigidbody.AddForce(-Vector3.right * movementSpeed);
+        float leftStickHorizontal = Input.GetAxis(playerPrefix + "Horizontal");
+        float leftStickVertical = Input.GetAxis(playerPrefix + "Vertical");
 
-        if (Input.GetAxis(playerPrefix + "Vertical") > 0.1)
-            rigidbody.AddForce(-Vector3.forward * movementSpeed);
-        else if (Input.GetAxis(playerPrefix + "Vertical") < -0.1)
-            rigidbody.AddForce(Vector3.forward * movementSpeed);
+        //Movement======================================================
+        if (leftStickHorizontal > analogStickTolerance)
+            rigidbody.AddForce(Vector3.right * movementSpeed * Mathf.Abs(leftStickHorizontal));
+        else if (leftStickHorizontal < -analogStickTolerance)
+            rigidbody.AddForce(-Vector3.right * movementSpeed * Mathf.Abs(leftStickHorizontal));
 
-        //Rotation
-        if (Input.GetAxis(playerPrefix + "VerticalRotation") > 0.1 || Input.GetAxis(playerPrefix + "VerticalRotation") < -0.1 || Input.GetAxis(playerPrefix + "HorizontalRotation") > 0.1 || Input.GetAxis(playerPrefix + "HorizontalRotation") < -0.1)
+        if (leftStickVertical > analogStickTolerance)
+            rigidbody.AddForce(-Vector3.forward * movementSpeed * Mathf.Abs(leftStickVertical));
+        else if (leftStickVertical < -analogStickTolerance)
+            rigidbody.AddForce(Vector3.forward * movementSpeed * Mathf.Abs(leftStickVertical));
+        //==============================================================
+
+        //Rotation======================================================
+        if (Input.GetAxis(playerPrefix + "VerticalRotation") > analogStickTolerance || Input.GetAxis(playerPrefix + "VerticalRotation") < -analogStickTolerance || Input.GetAxis(playerPrefix + "HorizontalRotation") > analogStickTolerance || Input.GetAxis(playerPrefix + "HorizontalRotation") < -analogStickTolerance)
         {
+            rightAnalogStickIsUsed = true;
             Vector3 angle = new Vector3(0, Mathf.Atan2(Input.GetAxis(playerPrefix + "HorizontalRotation"), -Input.GetAxis(playerPrefix + "VerticalRotation")) * Mathf.Rad2Deg, 0);
-            transform.rotation = Quaternion.Euler(angle);
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(angle), Time.deltaTime * rotationSpeed);
+
+            if (automaticShoot)
+                ShootBullet();
         }
 
-        //Shoot
-        if (Input.GetAxis(playerPrefix + "Shoot") > 0.1 && canShoot)
+        /*Rotation when automatic shoot is true:
+         *  - Orient player to the direction where he is facing (Left analog stick)
+         *  - Check if the Right analog stick is used:
+         *      - If not -> Face him to the direction
+         *      - If yes -> Let the right analog stick do the facing.
+         */
+        if (!rightAnalogStickIsUsed)
+        {
+            //Check the analog stick tolerance
+            if (leftStickHorizontal > analogStickTolerance || leftStickHorizontal < -analogStickTolerance
+                || leftStickVertical > analogStickTolerance || leftStickVertical < -analogStickTolerance)
+            {
+                Vector3 angle = new Vector3(0, Mathf.Atan2(Input.GetAxis(playerPrefix + "Horizontal"), -Input.GetAxis(playerPrefix + "Vertical")) * Mathf.Rad2Deg, 0);
+                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(angle), Time.deltaTime * rotationSpeed);
+            }
+        }
+
+        //==============================================================
+
+        //Shoot======================================================
+        if (!automaticShoot && Input.GetAxis(playerPrefix + "Shoot") > 0.1)
+        {
+            ShootBullet();
+        }
+        //==============================================================
+
+        rightAnalogStickIsUsed = false;
+        
+    }
+
+    /// <summary>
+    /// Shoots the bullet. A new bullet instance will be created.
+    /// </summary>
+    private void ShootBullet()
+    {
+        if (canShoot)
         {
             GameObject obj = Instantiate(Resources.Load<GameObject>("Bullet")) as GameObject;
 
             BulletScript bullet = obj.GetComponent<BulletScript>();
             bullet.Direction = transform.forward;
             bullet.transform.position = transform.FindChild("BulletSpawnPoint").transform.position;
-            
+
             bullet.name = "Bullet";
 
             canShoot = false;
@@ -70,6 +134,13 @@ public class SimplePlayer : MonoBehaviour
             //TODO: implement functionality in Bullet class
             Destroy(obj, bullet.lifeTime);
         }
+    }
+
+    private void DrawLine()
+    {
+        LineRenderer line = GetComponent<LineRenderer>();
+        line.SetPosition(0, transform.position);
+        line.SetPosition(1, transform.position + transform.forward * lineLength);
     }
 
     IEnumerator WaitForShoot()

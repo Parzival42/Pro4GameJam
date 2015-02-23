@@ -50,7 +50,7 @@ public class PlayerManager : MonoBehaviour
 
     }
 
-	public void AddPhonePlayer(StreamReader readerLeft, StreamReader readerRight) {
+	public void AddPhonePlayer(int PLAYER) {
 
 		GameObject obj;
 
@@ -60,8 +60,8 @@ public class PlayerManager : MonoBehaviour
 			
 			playerCount++;
 			obj = Instantiate(Resources.Load<GameObject>("Player")) as GameObject;
-			obj.GetComponent<SimplePlayer>().LeftStream = readerLeft;
-			obj.GetComponent<SimplePlayer>().RightStream = readerRight;
+			obj.GetComponent<SimplePlayer>().PhonePlayer = PLAYER;
+			obj.GetComponent<SimplePlayer>().IsPhone = true;
 			obj.transform.position = spawnPosition.position;
 			
 		}

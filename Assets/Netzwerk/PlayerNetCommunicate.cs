@@ -8,9 +8,12 @@ using System.IO;
 
 public class PlayerNetCommunicate : MonoBehaviour
 {
-	
+
+	public PlayerManager playerManager;
 	TcpListener tcpListenerLeft;
 	TcpListener tcpListenerRight;
+	StreamReader streamReaderRight;
+	StreamReader streamReaderLeft;
 	Boolean left;
 	Boolean right;
 	int PORT = 4444;
@@ -44,9 +47,9 @@ public class PlayerNetCommunicate : MonoBehaviour
 			NetworkStream streamLeft = tcpListenerLeft.AcceptTcpClient().GetStream();
 			Debug.Log("Left Connection accepted.");
 			
-			StreamReader streamReaderLeft = new StreamReader(streamLeft);
+			streamReaderLeft = new StreamReader(streamLeft);
 			left = true;
-			HandOversStreamReader();
+			HandOverStreamReader();
 			
 		});
 		
@@ -55,18 +58,18 @@ public class PlayerNetCommunicate : MonoBehaviour
 			NetworkStream streamRight = tcpListenerRight.AcceptTcpClient().GetStream();
 			Debug.Log("Right Connection accepted.");
 			
-			StreamReader streamReaderRight = new StreamReader(streamRight);
+			streamReaderRight = new StreamReader(streamRight);
 			right = true;
-			HandOversStreamReader();
+			HandOverStreamReader();
 
 		});
 
 	}
 	
-	void HandOversStreamReader () {
+	void HandOverStreamReader () {
 
 		if (left && right) {
-			//Hand over StreamReader to Player
+			playerManager.AddPhonePlayer(streamReaderLeft, streamReaderRight);
 			right = false;
 			left = false;
 			InitializeListener ();
@@ -91,53 +94,8 @@ public class PlayerNetCommunicate : MonoBehaviour
 	}
 
 }
+			
 
-
-//int angleLeft;
-//int distanceLeft;
-//int angleRight;
-
-/**while (true) {
-				
-				String data = streamReaderLeft.ReadLine();
-				String[] tokens = data.Split(' ');
-				
-				if (tokens.Length == 2) {
-					if (tokens[0] != "") {
-						angleLeft = int.Parse(tokens[0].Substring(1));
-					}
-					
-					if (tokens[1] != "") {
-						distanceLeft = int.Parse(tokens[1].Substring(1));
-					}
-					
-				} else if (tokens.Length == 1) {
-					
-					if (tokens[0] != "") {
-						if (tokens[0].Substring(0,1).Equals("0")) {
-							angleLeft = int.Parse(tokens[0].Substring(1));
-						}
-						
-						if (tokens[0].Substring(0,1).Equals("1")) {
-							distanceLeft = int.Parse(tokens[0].Substring(1));
-						}
-					}
-				}
-				
-			};**/
-
-/**while (true) {
-				
-				String data = streamReaderRight.ReadLine();
-				
-				if (data.Substring(0,1).Equals("a")) {
-					
-				} else {
-					angleRight = int.Parse(data);
-				}
-				
-			};
-			**/
 
 /**gameObject.transform.rotation = Quaternion.AngleAxis(angleRight, Vector3.up);
 		
@@ -147,10 +105,6 @@ public class PlayerNetCommunicate : MonoBehaviour
 		newPosition.z += (float)(Math.Sin (DegreeToRadian (angleLeft)) * distanceLeft * 0.001);
 		
 		gameObject.transform.position = newPosition;**/
-
-/** private double DegreeToRadian(int angle) {
-		return (270.0 - (Math.PI * (double)angle / 180.0));
-	}**/
 
 //string responseString = "You have successfully connected to me";
 

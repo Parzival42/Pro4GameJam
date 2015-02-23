@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.IO;
+using System;
 
 public class SimplePlayer : MonoBehaviour 
 {
@@ -28,6 +30,24 @@ public class SimplePlayer : MonoBehaviour
     //LineRenderer
     public float lineLength = 15f;
 
+	//phoneInput
+	private StreamReader leftStream = null;
+	private StreamReader rightStream = null;
+
+	//phone varialbe values
+	private int angleLeft = 0;
+	private int distanceLeft = 0;
+	private int angleRight = 0;
+	private Boolean buttonPressed = false;
+
+	public StreamReader LeftStream {
+		set {leftStream = value;}
+	}
+
+	public StreamReader RightStream {
+		set {rightStream = value;}
+	}
+
 	// Use this for initialization
 	void Start () 
     {
@@ -52,7 +72,13 @@ public class SimplePlayer : MonoBehaviour
 
     void FixedUpdate()
     {
-        HandleInput();
+		if (leftStream == null && rightStream == null) {
+			HandleInput ();
+		} else {
+			HandlePhoneInput();
+		}
+
+        
     }
 
     private void HandleInput()
@@ -113,6 +139,129 @@ public class SimplePlayer : MonoBehaviour
         
     }
 
+	private void HandlePhoneInput()
+	{
+		float leftStickHorizontal = (float)(Math.Cos (DegreeToRadian (angleLeft)));
+		float leftStickVertical = (float)(Math.Sin (DegreeToRadian (angleLeft)));
+		float rightStickHorizontal = (float)(Math.Cos (DegreeToRadian (angleRight)));
+		float rightStickVertical = (float)(Math.Sin (DegreeToRadian (angleRight)));
+		
+		//Movement======================================================
+		if (leftStickHorizontal > analogStickTolerance)
+			rigidbody.AddForce(Vector3.right * movementSpeed * Mathf.Abs(leftStickHorizontal));
+		else if (leftStickHorizontal < -analogStickTolerance)
+			rigidbody.AddForce(-Vector3.right * movementSpeed * Mathf.Abs(leftStickHorizontal));
+		
+		if (leftStickVertical > analogStickTolerance)
+			rigidbody.AddForce(-Vector3.forward * movementSpeed * Mathf.Abs(leftStickVertical));
+		else if (leftStickVertical < -analogStickTolerance)
+			rigidbody.AddForce(Vector3.forward * movementSpeed * Mathf.Abs(leftStickVertical));
+		//==============================================================
+		
+		//Rotation======================================================
+		if (rightStickVertical > analogStickTolerance || rightStickVertical < -analogStickTolerance || rightStickHorizontal > analogStickTolerance || rightStickHorizontal < -analogStickTolerance)
+		{
+			rightAnalogStickIsUsed = true;
+			Vector3 angle = new Vector3(0, Mathf.Atan2(rightStickHorizontal, -rightStickVertical) * Mathf.Rad2Deg, 0);
+			transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(angle), Time.deltaTime * rotationSpeed);
+			
+			if (automaticShoot)
+				ShootBullet();
+		}
+		
+		/*Rotation when automatic shoot is true:
+         *  - Orient player to the direction where he is facing (Left analog stick)
+         *  - Check if the Right analog stick is used:
+         *      - If not -> Face him to the direction
+         *      - If yes -> Let the right analog stick do the facing.
+         */
+		if (!rightAnalogStickIsUsed)
+		{
+			//Check the analog stick tolerance
+			if (leftStickHorizontal > analogStickTolerance || leftStickHorizontal < -analogStickTolerance
+			    || leftStickVertical > analogStickTolerance || leftStickVertical < -analogStickTolerance)
+			{
+				Vector3 angle = new Vector3(0, Mathf.Atan2(Input.GetAxis(playerPrefix + "Horizontal"), -Input.GetAxis(playerPrefix + "Vertical")) * Mathf.Rad2Deg, 0);
+				transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(angle), Time.deltaTime * rotationSpeed);
+			}
+		}
+		
+		//==============================================================
+		
+		//Shoot======================================================
+		if (!automaticShoot && Input.GetAxis(playerPrefix + "Shoot") > 0.1)
+		{
+			ShootBullet();
+		}
+		//==============================================================
+		
+		rightAnalogStickIsUsed = false;
+		
+	}
+
+	public void UpdateVariables() {
+
+		//Listen to left stick
+
+		UnityThreadHelper.CreateThread(() =>
+		                               {
+
+			while (true) {
+				
+				String data = leftStream.ReadLine();
+				String[] tokens = data.Split(' ');
+				
+				if (tokens.Length == 2) {
+					if (tokens[0] != "") {
+						angleLeft = int.Parse(tokens[0].Substring(1));
+					}
+					
+					if (tokens[1] != "") {
+						distanceLeft = int.Parse(tokens[1].Substring(1));
+					}
+					
+				} else if (tokens.Length == 1) {
+					
+					if (tokens[0] != "") {
+						if (tokens[0].Substring(0,1).Equals("0")) {
+							angleLeft = int.Parse(tokens[0].Substring(1));
+						}
+						
+						if (tokens[0].Substring(0,1).Equals("1")) {
+							distanceLeft = int.Parse(tokens[0].Substring(1));
+						}
+					}
+				}
+				
+			};
+			
+		});
+
+		//Listen to right stick
+
+		UnityThreadHelper.CreateThread(() =>
+		                               {
+
+			while (true) {
+				
+				String data = rightStream.ReadLine();
+				
+				if (data.Substring(0,1).Equals("a")) {
+					if (data.Substring(1,2).Equals("0")) {
+						buttonPressed = false;
+					} else {
+						buttonPressed = true;
+					}
+				} else {
+					angleRight = int.Parse(data);
+				}
+				
+			};
+			
+		});
+
+	}
+
     /// <summary>
     /// Shoots the bullet. A new bullet instance will be created.
     /// </summary>
@@ -148,4 +297,8 @@ public class SimplePlayer : MonoBehaviour
         yield return new WaitForSeconds(timeToShoot);
         canShoot = true;
     }
+
+	private double DegreeToRadian(int angle) {
+		return (270.0 - (Math.PI * (double)angle / 180.0));
+	}
 }

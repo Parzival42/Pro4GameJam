@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.IO;
 
 public class PlayerManager : MonoBehaviour 
 {
@@ -48,4 +49,22 @@ public class PlayerManager : MonoBehaviour
         }
 
     }
+
+	public void AddPhonePlayer(StreamReader readerLeft, StreamReader readerRight) {
+
+		GameObject obj;
+
+		if (playerCount == 1) {
+
+			Debug.Log("Player 2 joined with phone!");
+			
+			playerCount++;
+			obj = Instantiate(Resources.Load<GameObject>("Player")) as GameObject;
+			obj.GetComponent<SimplePlayer>().LeftStream = readerLeft;
+			obj.GetComponent<SimplePlayer>().RightStream = readerRight;
+			obj.transform.position = spawnPosition.position;
+			
+		}
+
+	}
 }

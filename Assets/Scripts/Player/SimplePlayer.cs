@@ -27,30 +27,27 @@ public class SimplePlayer : MonoBehaviour
     //Determines if the right stick is used or not.
     private bool rightAnalogStickIsUsed = false;
 
-    //LineRenderer
+    //Line Renderer
     public float lineLength = 15f;
 
-	//phoneInput
-	private StreamReader leftStream = null;
-	private StreamReader rightStream = null;
+	//phone Input
+	private int phonePlayer;
+	private Boolean isPhone = false;
 
-	//phone varialbe values
-	private int angleLeft = 0;
-	private int distanceLeft = 0;
-	private int angleRight = 0;
-	private Boolean buttonPressed = false;
+	public PlayerNetCommunicate playerComm;
 
-	public StreamReader LeftStream {
-		set {leftStream = value;}
+	public int PhonePlayer {
+		set {phonePlayer = value;}
 	}
 
-	public StreamReader RightStream {
-		set {rightStream = value;}
+	public Boolean IsPhone {
+		set {isPhone = value;}
 	}
 
 	// Use this for initialization
 	void Start () 
     {
+
         LineRenderer line = gameObject.AddComponent<LineRenderer>();
         line.material = new Material(Resources.Load<Material>("LineRendererMaterial"));
         line.SetColors(Color.white, Color.black);
@@ -62,7 +59,10 @@ public class SimplePlayer : MonoBehaviour
         name =  pManager.PlayerPrefix + "Player";
 
         Debug.Log(playerPrefix + "Player added!");
+
 	}
+
+
 	
 	// Update is called once per frame
 	void Update () 
@@ -72,17 +72,18 @@ public class SimplePlayer : MonoBehaviour
 
     void FixedUpdate()
     {
-		if (leftStream == null && rightStream == null) {
-			HandleInput ();
-		} else {
-			HandlePhoneInput();
-		}
 
+		if (isPhone) {
+			HandlePhoneInput();
+		} else {
+			HandleInput ();
+		}
         
     }
 
     private void HandleInput()
     {
+		Debug.Log ("PC controls being processed...");
         float leftStickHorizontal = Input.GetAxis(playerPrefix + "Horizontal");
         float leftStickVertical = Input.GetAxis(playerPrefix + "Vertical");
 
@@ -141,10 +142,12 @@ public class SimplePlayer : MonoBehaviour
 
 	private void HandlePhoneInput()
 	{
-		float leftStickHorizontal = (float)(Math.Cos (DegreeToRadian (angleLeft)));
-		float leftStickVertical = (float)(Math.Sin (DegreeToRadian (angleLeft)));
-		float rightStickHorizontal = (float)(Math.Cos (DegreeToRadian (angleRight)));
-		float rightStickVertical = (float)(Math.Sin (DegreeToRadian (angleRight)));
+		Debug.Log ("Phone controls being processed...");
+
+		float leftStickHorizontal = (float)(Math.Cos (DegreeToRadian (playerComm.angleLeft[phonePlayer])));
+		float leftStickVertical = (float)(Math.Sin (DegreeToRadian (playerComm.angleLeft[phonePlayer])));
+		float rightStickHorizontal = (float)(Math.Cos (DegreeToRadian (playerComm.angleRight[phonePlayer])));
+		float rightStickVertical = (float)(Math.Sin (DegreeToRadian (playerComm.angleRight[phonePlayer])));
 		
 		//Movement======================================================
 		if (leftStickHorizontal > analogStickTolerance)
@@ -199,69 +202,6 @@ public class SimplePlayer : MonoBehaviour
 		
 	}
 
-	public void UpdateVariables() {
-
-		//Listen to left stick
-
-		UnityThreadHelper.CreateThread(() =>
-		                               {
-
-			while (true) {
-				
-				String data = leftStream.ReadLine();
-				String[] tokens = data.Split(' ');
-				
-				if (tokens.Length == 2) {
-					if (tokens[0] != "") {
-						angleLeft = int.Parse(tokens[0].Substring(1));
-					}
-					
-					if (tokens[1] != "") {
-						distanceLeft = int.Parse(tokens[1].Substring(1));
-					}
-					
-				} else if (tokens.Length == 1) {
-					
-					if (tokens[0] != "") {
-						if (tokens[0].Substring(0,1).Equals("0")) {
-							angleLeft = int.Parse(tokens[0].Substring(1));
-						}
-						
-						if (tokens[0].Substring(0,1).Equals("1")) {
-							distanceLeft = int.Parse(tokens[0].Substring(1));
-						}
-					}
-				}
-				
-			};
-			
-		});
-
-		//Listen to right stick
-
-		UnityThreadHelper.CreateThread(() =>
-		                               {
-
-			while (true) {
-				
-				String data = rightStream.ReadLine();
-				
-				if (data.Substring(0,1).Equals("a")) {
-					if (data.Substring(1,2).Equals("0")) {
-						buttonPressed = false;
-					} else {
-						buttonPressed = true;
-					}
-				} else {
-					angleRight = int.Parse(data);
-				}
-				
-			};
-			
-		});
-
-	}
-
     /// <summary>
     /// Shoots the bullet. A new bullet instance will be created.
     /// </summary>
@@ -301,4 +241,5 @@ public class SimplePlayer : MonoBehaviour
 	private double DegreeToRadian(int angle) {
 		return (270.0 - (Math.PI * (double)angle / 180.0));
 	}
+	
 }

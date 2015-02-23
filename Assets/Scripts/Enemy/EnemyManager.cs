@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class _EnemyManager : MonoBehaviour {
+public class EnemyManager : MonoBehaviour {
 
 	//public PlayerHealth playerHealth;       // Reference to the player's heatlh.
 	public GameObject enemy;                // The enemy prefab to be spawned.

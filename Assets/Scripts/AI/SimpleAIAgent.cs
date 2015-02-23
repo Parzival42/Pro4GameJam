@@ -37,10 +37,5 @@ public class SimpleAIAgent : MonoBehaviour {
 		}
 
 	}
-	void OnTriggerEnter(Collider collider){
-		if (collider.gameObject.tag == "Player"){
-			player = collider.gameObject.GetComponent<Transform>();
-			agent.SetDestination(player.position);
-		}
-	}
+
 }

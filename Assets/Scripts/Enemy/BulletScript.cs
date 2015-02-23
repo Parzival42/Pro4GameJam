@@ -38,8 +38,9 @@ public class BulletScript : MonoBehaviour
 		Debug.Log("Lololo bullet hit!");
 		if (collider.gameObject.tag == "Enemy")
         {
+			Destroy(gameObject);
 			collider.gameObject.GetComponent<Enemy>().TakeDamage(damage);
-            //Destroy(this);
+            
 		}
 	}
 

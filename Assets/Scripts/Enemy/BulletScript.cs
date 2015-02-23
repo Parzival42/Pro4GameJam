@@ -35,7 +35,7 @@ public class BulletScript : MonoBehaviour
 
 	void OnTriggerEnter(Collider collider)
     {
-		Debug.Log("Lololo bullet hit!");
+		//Debug.Log("Lololo bullet hit!");
 		if (collider.gameObject.tag == "Enemy")
         {
 			Destroy(gameObject);

@@ -2382,7 +2382,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 146f657ac5ead44e79a776ac6ffe2175, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerManager: {fileID: 0}
+  playerManager: {fileID: 357316937}
   angleLeft: 
   distanceLeft: 
   angleRight: 

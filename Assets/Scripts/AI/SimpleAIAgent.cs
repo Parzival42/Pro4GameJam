@@ -2,40 +2,36 @@
 using System.Collections;
 
 public class SimpleAIAgent : MonoBehaviour {
-	public Transform player;
+	private GameObject[] players;
+	private Transform dummyPlayer;		// Used to calculate the nearest player.
+	private Transform player;
 	private NavMeshAgent agent;
-
+	private int playerIndex;
 	private float distance = 0.0f;
-	public int lookAtDistance;
 	public int attackRange;
 
 	// Use this for initialization
 	void Start () {
 		agent = GetComponent<NavMeshAgent>();
-
+		players = GameObject.FindGameObjectsWithTag("Player");
 	}
 	
 	// Update is called once per frame
 	void Update () {
+		players = GameObject.FindGameObjectsWithTag("Player");
+		player = players[0].transform;
+		for (int i = 0; i < players.Length; i++){
+			dummyPlayer = players[i].transform;
+			if (distance > Vector3.Distance(dummyPlayer.position , transform.position)){
+				player = dummyPlayer;
+			}
+			distance = Vector3.Distance(dummyPlayer.position , transform.position);
+		}
 
-		distance = Vector3.Distance(player.position , transform.position);
-		
-		
-		if (distance < lookAtDistance){
-			renderer.material.color = Color.yellow;
-			agent.Stop();
-		}
-		
-		if (distance >= lookAtDistance){
-			renderer.material.color = Color.green;
-			agent.Stop();
-		}
-		
 		if (distance < attackRange){
 			renderer.material.color = Color.red;
 			agent.SetDestination(player.position);
 		}
 
 	}
-
 }

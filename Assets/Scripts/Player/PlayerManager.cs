@@ -3,6 +3,8 @@ using System.Collections;
 
 public class PlayerManager : MonoBehaviour 
 {
+    Transform spawnPosition;
+
     //Actual player count (starts with one)
     private int playerCount = 1;
     public int PlayerCount
@@ -22,7 +24,8 @@ public class PlayerManager : MonoBehaviour
 	// Use this for initialization
 	void Start () 
     {
-	
+        if(GameObject.FindGameObjectsWithTag("PlayerSpawn").Length > 0)
+            spawnPosition = GameObject.FindGameObjectsWithTag("PlayerSpawn")[0].transform;
 	}
 	
 	// Update is called once per frame
@@ -41,7 +44,8 @@ public class PlayerManager : MonoBehaviour
 
             playerCount++;
             obj = Instantiate(Resources.Load<GameObject>("Player")) as GameObject;
-            obj.transform.position = new Vector3(-165, 1, 0);
+            obj.transform.position = spawnPosition.position;
         }
+
     }
 }

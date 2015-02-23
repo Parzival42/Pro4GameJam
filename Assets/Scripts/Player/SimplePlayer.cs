@@ -34,7 +34,8 @@ public class SimplePlayer : MonoBehaviour
 	private int phonePlayer;
 	private Boolean isPhone = false;
 
-	public PlayerNetCommunicate playerComm;
+	public GameObject network;
+	private PlayerNetCommunicate playerComm;
 
 	public int PhonePlayer {
 		set {phonePlayer = value;}
@@ -47,7 +48,8 @@ public class SimplePlayer : MonoBehaviour
 	// Use this for initialization
 	void Start () 
     {
-
+		Debug.Log (phonePlayer);
+		playerComm = (PlayerNetCommunicate)network.GetComponent<PlayerNetCommunicate> ();
         LineRenderer line = gameObject.AddComponent<LineRenderer>();
         line.material = new Material(Resources.Load<Material>("LineRendererMaterial"));
         line.SetColors(Color.white, Color.black);

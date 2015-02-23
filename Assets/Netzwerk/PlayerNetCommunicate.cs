@@ -5,11 +5,13 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.IO;
+using UnityThreading;
 
 public class PlayerNetCommunicate : MonoBehaviour
 {
 
 	public PlayerManager playerManager;
+
 	TcpListener tcpListenerLeft;
 	TcpListener tcpListenerRight;
 	StreamReader streamReaderRight;
@@ -29,7 +31,7 @@ public class PlayerNetCommunicate : MonoBehaviour
 
 	void Start()
 	{
-		Debug.Log (LocalIPAddress());
+		//Debug.Log (LocalIPAddress());
 
 		streamReadersLeft = new StreamReader[4];
 		streamReadersRight = new StreamReader[4];
@@ -138,6 +140,21 @@ public class PlayerNetCommunicate : MonoBehaviour
 		}
 	}
 
+	void OnApplicationQuit()
+	{
+		
+		// You must close the tcp listener
+		try
+		{
+			tcpListenerLeft.Stop();
+			tcpListenerRight.Stop ();
+		}
+		catch(Exception e)
+		{
+			Debug.Log(e.Message);
+		}
+	}
+	
 	public string LocalIPAddress()
 	{
 		IPHostEntry host;

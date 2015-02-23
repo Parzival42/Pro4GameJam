@@ -33,7 +33,7 @@ public class EnemyManager : MonoBehaviour {
 		// Create an instance of the enemy prefab at the randomly selected spawn point's position and rotation.
 		if (counter <= limit){
 			counter++;
-			Debug.Log (counter);
+			//Debug.Log (counter);
 			if (counter > 1){
 				Instantiate (enemy, spawnPoints[spawnPointIndex].position, spawnPoints[spawnPointIndex].rotation);
 			}

@@ -7,7 +7,7 @@ public class Enemy : MonoBehaviour {
 
 	public void TakeDamage(float damage){
 		health -= damage;
-		Debug.Log("Lololo bullet hit!");
+		//Debug.Log("Lololo bullet hit!");
 		if (health <= 0){
 			EnemyManager.counter--;
 			Destroy(gameObject);

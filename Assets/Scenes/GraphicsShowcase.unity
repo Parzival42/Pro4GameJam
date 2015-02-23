@@ -951,11 +951,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemy: {fileID: 163242, guid: 5f06280094b715d4fbf13377e8af92c2, type: 2}
-  spawnTime: .75
+  spawnTime: .699999988
   spawnPoints:
   - {fileID: 1470833155}
   - {fileID: 1165653766}
-  limit: 200
+  limit: 450
 --- !u!4 &556580929
 Transform:
   m_ObjectHideFlags: 0

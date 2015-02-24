@@ -21,19 +21,27 @@ public class PlayerNetCommunicate : MonoBehaviour
 	int PORT = 4444;
 	int PLAYER = 0;
 
-	private StreamReader[] streamReadersLeft;
-	private StreamReader[] streamReadersRight;
+	private StreamReader streamReadersLeft;
+	private StreamReader streamReadersRight;
 
-	public int[] angleLeft;
-	public int[] distanceLeft;
-	public int[] angleRight;
-	public Boolean[] buttonPressed;
+	public int angleLeft;
+	public int distanceLeft;
+	public int angleRight;
+	public int buttonPressed;
+
+	//private StreamReader[] streamReadersLeft;
+	//private StreamReader[] streamReadersRight;
+
+	//public int[] angleLeft;
+	//public int[] distanceLeft;
+	//public int[] angleRight;
+	//public Boolean[] buttonPressed;
 
 	void Start()
 	{
 		//Debug.Log (LocalIPAddress());
 
-		streamReadersLeft = new StreamReader[4];
+		/**streamReadersLeft = new StreamReader[4];
 		streamReadersRight = new StreamReader[4];
 
 		angleLeft = new int[4];
@@ -46,7 +54,12 @@ public class PlayerNetCommunicate : MonoBehaviour
 			distanceLeft[i] = 0;
 			angleRight[i] = 0;
 			buttonPressed[i] = false;
-		}
+		}**/
+
+		angleLeft = 0;
+		distanceLeft = 0;
+		angleRight = 0;
+		buttonPressed = 0;
 
 		InitializeListener ();
 	}
@@ -68,32 +81,32 @@ public class PlayerNetCommunicate : MonoBehaviour
 			NetworkStream streamLeft = tcpListenerLeft.AcceptTcpClient().GetStream();
 			Debug.Log("Left Connection accepted.");
 			
-			streamReadersLeft[PLAYER] = new StreamReader(streamLeft);
+			streamReadersLeft = new StreamReader(streamLeft);
 			left = true;
 
 			while (true) {
 				
-				String data = streamReadersLeft[PLAYER].ReadLine();
+				String data = streamReadersLeft.ReadLine();
 				String[] tokens = data.Split(' ');
 				
 				if (tokens.Length == 2) {
 					if (tokens[0] != "") {
-						angleLeft[PLAYER] = int.Parse(tokens[0].Substring(1));
+						angleLeft = int.Parse(tokens[0].Substring(1));
 					}
 					
 					if (tokens[1] != "") {
-						distanceLeft[PLAYER] = int.Parse(tokens[1].Substring(1));
+						distanceLeft = int.Parse(tokens[1].Substring(1));
 					}
 					
 				} else if (tokens.Length == 1) {
 					
 					if (tokens[0] != "") {
 						if (tokens[0].Substring(0,1).Equals("0")) {
-							angleLeft[PLAYER] = int.Parse(tokens[0].Substring(1));
+							angleLeft = int.Parse(tokens[0].Substring(1));
 						}
 						
 						if (tokens[0].Substring(0,1).Equals("1")) {
-							distanceLeft[PLAYER] = int.Parse(tokens[0].Substring(1));
+							distanceLeft = int.Parse(tokens[0].Substring(1));
 						}
 					}
 				}
@@ -107,21 +120,23 @@ public class PlayerNetCommunicate : MonoBehaviour
 			NetworkStream streamRight = tcpListenerRight.AcceptTcpClient().GetStream();
 			Debug.Log("Right Connection accepted.");
 			
-			streamReadersRight[PLAYER] = new StreamReader(streamRight);
+			streamReadersRight = new StreamReader(streamRight);
 			right = true;
 
 			while (true) {
 				
-				String data = streamReadersRight[PLAYER].ReadLine();
+				String data = streamReadersRight.ReadLine();
+
+				Debug.Log (data);
 				
 				if (data.Substring(0,1).Equals("a")) {
-					if (data.Substring(1,2).Equals("0")) {
-						buttonPressed[PLAYER] = false;
+					if (data.Substring(1).Equals("0")) {
+						buttonPressed = 0;
 					} else {
-						buttonPressed[PLAYER] = true;
+						buttonPressed = 1;
 					}
 				} else {
-					angleRight[PLAYER] = int.Parse(data);
+					angleRight = int.Parse(data);
 				}
 				
 			};

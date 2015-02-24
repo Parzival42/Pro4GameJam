@@ -30,11 +30,14 @@ public class SimplePlayer : MonoBehaviour
     //Line Renderer
     public float lineLength = 15f;
 
-	//phone Input
+	//tells the number of phone player
 	private int phonePlayer;
+
+	//tells wether the player is a phone or not
 	private Boolean isPhone = false;
 
-	public GameObject network;
+
+	// acces the network data
 	private PlayerNetCommunicate playerComm;
 
 	public int PhonePlayer {
@@ -48,8 +51,7 @@ public class SimplePlayer : MonoBehaviour
 	// Use this for initialization
 	void Start () 
     {
-		Debug.Log (phonePlayer);
-		playerComm = (PlayerNetCommunicate)network.GetComponent<PlayerNetCommunicate> ();
+		playerComm = GameObject.Find("_Network").GetComponent<PlayerNetCommunicate>();
         LineRenderer line = gameObject.AddComponent<LineRenderer>();
         line.material = new Material(Resources.Load<Material>("LineRendererMaterial"));
         line.SetColors(Color.white, Color.black);
@@ -64,8 +66,6 @@ public class SimplePlayer : MonoBehaviour
 
 	}
 
-
-	
 	// Update is called once per frame
 	void Update () 
     {
@@ -144,12 +144,11 @@ public class SimplePlayer : MonoBehaviour
 
 	private void HandlePhoneInput()
 	{
-		Debug.Log ("Phone controls being processed...");
 
-		float leftStickHorizontal = (float)(Math.Cos (DegreeToRadian (playerComm.angleLeft[phonePlayer])));
-		float leftStickVertical = (float)(Math.Sin (DegreeToRadian (playerComm.angleLeft[phonePlayer])));
-		float rightStickHorizontal = (float)(Math.Cos (DegreeToRadian (playerComm.angleRight[phonePlayer])));
-		float rightStickVertical = (float)(Math.Sin (DegreeToRadian (playerComm.angleRight[phonePlayer])));
+		float leftStickHorizontal = (float) (Math.Cos (DegreeToRadian (playerComm.angleLeft)) * playerComm.distanceLeft / 300);
+		float leftStickVertical = (float)(Math.Sin (DegreeToRadian (playerComm.angleLeft)) * playerComm.distanceLeft / 300);
+		float rightStickHorizontal = (float)(Math.Cos (DegreeToRadian (playerComm.angleRight)) * playerComm.distanceLeft / 300);
+		float rightStickVertical = (float)(Math.Sin (DegreeToRadian (playerComm.angleRight)) * playerComm.distanceLeft / 300);
 		
 		//Movement======================================================
 		if (leftStickHorizontal > analogStickTolerance)
@@ -186,7 +185,7 @@ public class SimplePlayer : MonoBehaviour
 			if (leftStickHorizontal > analogStickTolerance || leftStickHorizontal < -analogStickTolerance
 			    || leftStickVertical > analogStickTolerance || leftStickVertical < -analogStickTolerance)
 			{
-				Vector3 angle = new Vector3(0, Mathf.Atan2(Input.GetAxis(playerPrefix + "Horizontal"), -Input.GetAxis(playerPrefix + "Vertical")) * Mathf.Rad2Deg, 0);
+				Vector3 angle = new Vector3(0, Mathf.Atan2(rightStickHorizontal, -rightStickVertical) * Mathf.Rad2Deg, 0);
 				transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(angle), Time.deltaTime * rotationSpeed);
 			}
 		}
@@ -194,7 +193,7 @@ public class SimplePlayer : MonoBehaviour
 		//==============================================================
 		
 		//Shoot======================================================
-		if (!automaticShoot && Input.GetAxis(playerPrefix + "Shoot") > 0.1)
+		if (!automaticShoot && playerComm.buttonPressed == 1)
 		{
 			ShootBullet();
 		}
@@ -241,7 +240,7 @@ public class SimplePlayer : MonoBehaviour
     }
 
 	private double DegreeToRadian(int angle) {
-		return (270.0 - (Math.PI * (double)angle / 180.0));
+		return ((Math.PI * (double)angle / 180.0));
 	}
 	
 }

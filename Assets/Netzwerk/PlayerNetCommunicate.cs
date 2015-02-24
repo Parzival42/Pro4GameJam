@@ -21,6 +21,8 @@ public class PlayerNetCommunicate : MonoBehaviour
 	int PORT = 4444;
 	int PLAYER = 0;
 
+	private System.Diagnostics.Process process;
+
 	private StreamReader streamReadersLeft;
 	private StreamReader streamReadersRight;
 
@@ -55,6 +57,8 @@ public class PlayerNetCommunicate : MonoBehaviour
 			angleRight[i] = 0;
 			buttonPressed[i] = false;
 		}**/
+
+		process = System.Diagnostics.Process.Start((Application.dataPath) + "/Netzwerk/ServiceAnnouncer.jar");
 
 		angleLeft = 0;
 		distanceLeft = 0;
@@ -157,7 +161,11 @@ public class PlayerNetCommunicate : MonoBehaviour
 
 	void OnApplicationQuit()
 	{
-		
+	
+		foreach (System.Diagnostics.Process p in System.Diagnostics.Process.GetProcessesByName("java")) {
+			p.CloseMainWindow();
+		}
+
 		// You must close the tcp listener
 		try
 		{

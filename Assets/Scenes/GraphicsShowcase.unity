@@ -845,7 +845,6 @@ MonoBehaviour:
   timeToShoot: .200000003
   rotationSpeed: 7
   lineLength: 15
-  network: {fileID: 145162, guid: cec99b52f9981448b831767cc18a45f6, type: 2}
 --- !u!54 &518533269
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2698,10 +2697,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerManager: {fileID: 357316937}
-  angleLeft: 
-  distanceLeft: 
-  angleRight: 
-  buttonPressed: 
+  angleLeft: 0
+  distanceLeft: 0
+  angleRight: 0
+  buttonPressed: 0
 --- !u!4 &2093999746
 Transform:
   m_ObjectHideFlags: 0

@@ -18,8 +18,9 @@ public class PlayerNetCommunicate : MonoBehaviour
 	StreamReader streamReaderLeft;
 	Boolean left;
 	Boolean right;
-	int PORT = 4444;
 	int PLAYER = 0;
+
+	int PORT = 4444;
 
 	private System.Diagnostics.Process process;
 
@@ -29,6 +30,7 @@ public class PlayerNetCommunicate : MonoBehaviour
 	public int angleLeft;
 	public int distanceLeft;
 	public int angleRight;
+	public int distanceRight;
 	public int buttonPressed;
 
 	//private StreamReader[] streamReadersLeft;
@@ -63,12 +65,13 @@ public class PlayerNetCommunicate : MonoBehaviour
 		angleLeft = 0;
 		distanceLeft = 0;
 		angleRight = 0;
+		distanceRight = 0;
 		buttonPressed = 0;
 
-		InitializeListener ();
+		InitializeListenerTcp ();
 	}
 
-	void InitializeListener() {
+	void InitializeListenerTcp() {
 
 		tcpListenerLeft = new TcpListener (IPAddress.Parse (LocalIPAddress ()), PORT);
 		Debug.Log("Created Listener on Port: " + PORT);
@@ -130,19 +133,37 @@ public class PlayerNetCommunicate : MonoBehaviour
 			while (true) {
 				
 				String data = streamReadersRight.ReadLine();
+				String[] tokens = data.Split(' ');
 
-				Debug.Log (data);
-				
-				if (data.Substring(0,1).Equals("a")) {
-					if (data.Substring(1).Equals("0")) {
-						buttonPressed = 0;
-					} else {
-						buttonPressed = 1;
+				if (tokens.Length == 2) {
+					if (tokens[0] != "") {
+						angleRight = int.Parse(tokens[0].Substring(1));
 					}
-				} else {
-					angleRight = int.Parse(data);
+					
+					if (tokens[1] != "") {
+						distanceRight = int.Parse(tokens[1].Substring(1));
+					}
+					
+				} else if (tokens.Length == 1) {
+					
+					if (tokens[0] != "") {
+						if (tokens[0].Substring(0,1).Equals("0")) {
+							angleRight = int.Parse(tokens[0].Substring(1));
+						}
+						
+						if (tokens[0].Substring(0,1).Equals("1")) {
+							distanceRight = int.Parse(tokens[0].Substring(1));
+						}
+
+						if (tokens[0].Substring(0,1).Equals("a")) {
+							if (data.Substring(1).Equals("0")) {
+								buttonPressed = 0;
+							} else {
+								buttonPressed = 1;
+							}
+						}
+					}
 				}
-				
 			};
 			
 		});
@@ -166,7 +187,6 @@ public class PlayerNetCommunicate : MonoBehaviour
 			p.CloseMainWindow();
 		}
 
-		// You must close the tcp listener
 		try
 		{
 			tcpListenerLeft.Stop();
@@ -193,7 +213,6 @@ public class PlayerNetCommunicate : MonoBehaviour
 		}
 		return localIP;
 	}
-
 }
 
 //string responseString = "You have successfully connected to me";

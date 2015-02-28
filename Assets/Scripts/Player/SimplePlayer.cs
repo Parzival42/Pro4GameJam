@@ -52,6 +52,7 @@ public class SimplePlayer : MonoBehaviour
 	void Start () 
     {
 		playerComm = GameObject.Find("_Network").GetComponent<PlayerNetCommunicate>();
+
         LineRenderer line = gameObject.AddComponent<LineRenderer>();
         line.material = new Material(Resources.Load<Material>("LineRendererMaterial"));
         line.SetColors(Color.white, Color.black);
@@ -147,8 +148,8 @@ public class SimplePlayer : MonoBehaviour
 
 		float leftStickHorizontal = (float) (Math.Cos (DegreeToRadian (playerComm.angleLeft)) * playerComm.distanceLeft / 300);
 		float leftStickVertical = (float)(Math.Sin (DegreeToRadian (playerComm.angleLeft)) * playerComm.distanceLeft / 300);
-		float rightStickHorizontal = (float)(Math.Cos (DegreeToRadian (playerComm.angleRight)) * playerComm.distanceLeft / 300);
-		float rightStickVertical = (float)(Math.Sin (DegreeToRadian (playerComm.angleRight)) * playerComm.distanceLeft / 300);
+		float rightStickHorizontal = (float)(Math.Cos (DegreeToRadian (playerComm.angleRight)) * playerComm.distanceRight / 300);
+		float rightStickVertical = (float)(Math.Sin (DegreeToRadian (playerComm.angleRight)) * playerComm.distanceRight / 300);
 		
 		//Movement======================================================
 		if (leftStickHorizontal > analogStickTolerance)

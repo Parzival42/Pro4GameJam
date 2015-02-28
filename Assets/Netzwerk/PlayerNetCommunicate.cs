@@ -10,7 +10,7 @@ using UnityThreading;
 public class PlayerNetCommunicate : MonoBehaviour
 {
 
-	public PlayerManager playerManager;
+	private PlayerManager playerManager;
 
 	private TcpListener[] tcpListenerLeft;
 	private TcpListener[] tcpListenerRight;
@@ -35,6 +35,8 @@ public class PlayerNetCommunicate : MonoBehaviour
 
 	void Start()
 	{
+
+		playerManager = GameObject.FindObjectOfType<PlayerManager>();
 
 		process = System.Diagnostics.Process.Start((Application.dataPath) + "/Netzwerk/ServiceAnnouncer.jar");
 

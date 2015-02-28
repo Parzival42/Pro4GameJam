@@ -51,7 +51,7 @@ public class SimplePlayer : MonoBehaviour
 	// Use this for initialization
 	void Start () 
     {
-		playerComm = GameObject.Find("_Network").GetComponent<PlayerNetCommunicate>();
+		playerComm = GameObject.FindObjectOfType<PlayerNetCommunicate>();
 
         LineRenderer line = gameObject.AddComponent<LineRenderer>();
         line.material = new Material(Resources.Load<Material>("LineRendererMaterial"));

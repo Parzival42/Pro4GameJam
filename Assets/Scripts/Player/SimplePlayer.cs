@@ -30,17 +30,17 @@ public class SimplePlayer : MonoBehaviour
     //Line Renderer
     public float lineLength = 15f;
 
-	//tells the number of phone player
+	//tells the number of phone players currently involved
 	private int phonePlayer;
 
 	//tells wether the player is a phone or not
 	private Boolean isPhone = false;
-
-
+	
 	// acces the network data
 	private PlayerNetCommunicate playerComm;
 
 	public int PhonePlayer {
+		get {return phonePlayer;}
 		set {phonePlayer = value;}
 	}
 
@@ -86,7 +86,6 @@ public class SimplePlayer : MonoBehaviour
 
     private void HandleInput()
     {
-		Debug.Log ("PC controls being processed...");
         float leftStickHorizontal = Input.GetAxis(playerPrefix + "Horizontal");
         float leftStickVertical = Input.GetAxis(playerPrefix + "Vertical");
 
@@ -146,10 +145,10 @@ public class SimplePlayer : MonoBehaviour
 	private void HandlePhoneInput()
 	{
 
-		float leftStickHorizontal = (float) (Math.Cos (DegreeToRadian (playerComm.angleLeft)) * playerComm.distanceLeft / 300);
-		float leftStickVertical = (float)(Math.Sin (DegreeToRadian (playerComm.angleLeft)) * playerComm.distanceLeft / 300);
-		float rightStickHorizontal = (float)(Math.Cos (DegreeToRadian (playerComm.angleRight)) * playerComm.distanceRight / 300);
-		float rightStickVertical = (float)(Math.Sin (DegreeToRadian (playerComm.angleRight)) * playerComm.distanceRight / 300);
+		float leftStickHorizontal = (float) (Math.Cos (DegreeToRadian (playerComm.angleLeft[phonePlayer])) * playerComm.distanceLeft[phonePlayer] / 300);
+		float leftStickVertical = (float)(Math.Sin (DegreeToRadian (playerComm.angleLeft[phonePlayer])) * playerComm.distanceLeft[phonePlayer] / 300);
+		float rightStickHorizontal = (float)(Math.Cos (DegreeToRadian (playerComm.angleRight[phonePlayer])) * playerComm.distanceRight[phonePlayer] / 300);
+		float rightStickVertical = (float)(Math.Sin (DegreeToRadian (playerComm.angleRight[phonePlayer])) * playerComm.distanceRight[phonePlayer] / 300);
 		
 		//Movement======================================================
 		if (leftStickHorizontal > analogStickTolerance)
@@ -194,7 +193,7 @@ public class SimplePlayer : MonoBehaviour
 		//==============================================================
 		
 		//Shoot======================================================
-		if (!automaticShoot && playerComm.buttonPressed == 1)
+		if (!automaticShoot && playerComm.buttonPressed[phonePlayer] == 1)
 		{
 			ShootBullet();
 		}

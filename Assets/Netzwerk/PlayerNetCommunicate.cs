@@ -12,108 +12,100 @@ public class PlayerNetCommunicate : MonoBehaviour
 
 	public PlayerManager playerManager;
 
-	TcpListener tcpListenerLeft;
-	TcpListener tcpListenerRight;
-	StreamReader streamReaderRight;
-	StreamReader streamReaderLeft;
+	private TcpListener[] tcpListenerLeft;
+	private TcpListener[] tcpListenerRight;
+
+	private StreamReader[] streamReadersLeft;
+	private StreamReader[] streamReadersRight;
+	
+	public int[] angleLeft;
+	public int[] distanceLeft;
+	public int[] angleRight;
+	public int[] distanceRight;
+	public int[] buttonPressed;
+	
 	Boolean left;
 	Boolean right;
-	int PLAYER = 0;
 
+	int PLAYER = 0;
+	int PLAYER_ACTIVE = 0;
 	int PORT = 4444;
 
 	private System.Diagnostics.Process process;
 
-	private StreamReader streamReadersLeft;
-	private StreamReader streamReadersRight;
-
-	public int angleLeft;
-	public int distanceLeft;
-	public int angleRight;
-	public int distanceRight;
-	public int buttonPressed;
-
-	//private StreamReader[] streamReadersLeft;
-	//private StreamReader[] streamReadersRight;
-
-	//public int[] angleLeft;
-	//public int[] distanceLeft;
-	//public int[] angleRight;
-	//public Boolean[] buttonPressed;
-
 	void Start()
 	{
-		//Debug.Log (LocalIPAddress());
 
-		/**streamReadersLeft = new StreamReader[4];
+		process = System.Diagnostics.Process.Start((Application.dataPath) + "/Netzwerk/ServiceAnnouncer.jar");
+
+		tcpListenerLeft = new TcpListener[4];
+		tcpListenerRight = new TcpListener[4];
+
+		streamReadersLeft = new StreamReader[4];
 		streamReadersRight = new StreamReader[4];
 
 		angleLeft = new int[4];
 		distanceLeft = new int[4];
 		angleRight = new int[4];
-		buttonPressed = new bool[4];
+		distanceRight = new int[4];
+		buttonPressed = new int[4];
 
 		for (int i = 0; i < 4; i++) {
 			angleLeft[i] = 0;
 			distanceLeft[i] = 0;
 			angleRight[i] = 0;
-			buttonPressed[i] = false;
-		}**/
-
-		process = System.Diagnostics.Process.Start((Application.dataPath) + "/Netzwerk/ServiceAnnouncer.jar");
-
-		angleLeft = 0;
-		distanceLeft = 0;
-		angleRight = 0;
-		distanceRight = 0;
-		buttonPressed = 0;
+			distanceRight[i] = 0;
+			buttonPressed[i] = 0;
+		}
 
 		InitializeListenerTcp ();
 	}
 
 	void InitializeListenerTcp() {
 
-		tcpListenerLeft = new TcpListener (IPAddress.Parse (LocalIPAddress ()), PORT);
+		tcpListenerLeft[PLAYER] = new TcpListener (IPAddress.Parse (LocalIPAddress ()), PORT);
 		Debug.Log("Created Listener on Port: " + PORT);
-		tcpListenerLeft.Start();
+		tcpListenerLeft[PLAYER].Start();
 		PORT++;
 		
-		tcpListenerRight = new TcpListener (IPAddress.Parse (LocalIPAddress ()), PORT);
+		tcpListenerRight[PLAYER] = new TcpListener (IPAddress.Parse (LocalIPAddress ()), PORT);
 		Debug.Log("Created Listener on Port: " + PORT);
-		tcpListenerRight.Start();
+		tcpListenerRight[PLAYER].Start();
 		PORT++;
 		
 		UnityThreadHelper.CreateThread(() =>
 		                               {
-			NetworkStream streamLeft = tcpListenerLeft.AcceptTcpClient().GetStream();
+			int slot = PLAYER;
+			NetworkStream streamLeft = tcpListenerLeft[slot].AcceptTcpClient().GetStream();
 			Debug.Log("Left Connection accepted.");
+			PLAYER_ACTIVE++;
 			
-			streamReadersLeft = new StreamReader(streamLeft);
+			streamReadersLeft[slot] = new StreamReader(streamLeft);
 			left = true;
 
 			while (true) {
 				
-				String data = streamReadersLeft.ReadLine();
+				String data = streamReadersLeft[slot].ReadLine();
 				String[] tokens = data.Split(' ');
 				
 				if (tokens.Length == 2) {
 					if (tokens[0] != "") {
-						angleLeft = int.Parse(tokens[0].Substring(1));
+						angleLeft[slot] = int.Parse(tokens[0].Substring(1));
 					}
 					
 					if (tokens[1] != "") {
-						distanceLeft = int.Parse(tokens[1].Substring(1));
+						distanceLeft[slot] = int.Parse(tokens[1].Substring(1));
 					}
 					
 				} else if (tokens.Length == 1) {
 					
 					if (tokens[0] != "") {
 						if (tokens[0].Substring(0,1).Equals("0")) {
-							angleLeft = int.Parse(tokens[0].Substring(1));
+							angleLeft[slot] = int.Parse(tokens[0].Substring(1));
 						}
 						
 						if (tokens[0].Substring(0,1).Equals("1")) {
-							distanceLeft = int.Parse(tokens[0].Substring(1));
+							distanceLeft[slot] = int.Parse(tokens[0].Substring(1));
 						}
 					}
 				}
@@ -124,48 +116,49 @@ public class PlayerNetCommunicate : MonoBehaviour
 		
 		UnityThreadHelper.CreateThread(() =>
 		                               {
-			NetworkStream streamRight = tcpListenerRight.AcceptTcpClient().GetStream();
+
+			int slot = PLAYER;
+			NetworkStream streamRight = tcpListenerRight[slot].AcceptTcpClient().GetStream();
 			Debug.Log("Right Connection accepted.");
 			
-			streamReadersRight = new StreamReader(streamRight);
+			streamReadersRight[slot] = new StreamReader(streamRight);
 			right = true;
 
 			while (true) {
 				
-				String data = streamReadersRight.ReadLine();
+				String data = streamReadersRight[slot].ReadLine();
 				String[] tokens = data.Split(' ');
 
 				if (tokens.Length == 2) {
 					if (tokens[0] != "") {
-						angleRight = int.Parse(tokens[0].Substring(1));
+						angleRight[slot] = int.Parse(tokens[0].Substring(1));
 					}
 					
 					if (tokens[1] != "") {
-						distanceRight = int.Parse(tokens[1].Substring(1));
+						distanceRight[slot] = int.Parse(tokens[1].Substring(1));
 					}
 					
 				} else if (tokens.Length == 1) {
 					
 					if (tokens[0] != "") {
 						if (tokens[0].Substring(0,1).Equals("0")) {
-							angleRight = int.Parse(tokens[0].Substring(1));
+							angleRight[slot] = int.Parse(tokens[0].Substring(1));
 						}
 						
 						if (tokens[0].Substring(0,1).Equals("1")) {
-							distanceRight = int.Parse(tokens[0].Substring(1));
+							distanceRight[slot] = int.Parse(tokens[0].Substring(1));
 						}
 
 						if (tokens[0].Substring(0,1).Equals("a")) {
 							if (data.Substring(1).Equals("0")) {
-								buttonPressed = 0;
+								buttonPressed[slot] = 0;
 							} else {
-								buttonPressed = 1;
+								buttonPressed[slot] = 1;
 							}
 						}
 					}
 				}
 			};
-			
 		});
 
 	}
@@ -174,9 +167,9 @@ public class PlayerNetCommunicate : MonoBehaviour
 		if (left && right) {
 			right = false;
 			left = false;
-			playerManager.AddPhonePlayer(PLAYER);
-			//PLAYER++;
-			//InitializeListener ();
+			playerManager.HandlePhonePlayerJoin(PLAYER);
+			PLAYER++;
+			InitializeListenerTcp ();
 		}
 	}
 
@@ -189,8 +182,10 @@ public class PlayerNetCommunicate : MonoBehaviour
 
 		try
 		{
-			tcpListenerLeft.Stop();
-			tcpListenerRight.Stop ();
+			for (int i = 0; i < PLAYER; i++) {
+				tcpListenerLeft[i].Stop();
+				tcpListenerRight[i].Stop ();
+			}
 		}
 		catch(Exception e)
 		{

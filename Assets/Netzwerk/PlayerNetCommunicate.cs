@@ -29,16 +29,33 @@ public class PlayerNetCommunicate : MonoBehaviour
 
 	int PLAYER = 0;
 	int PLAYER_ACTIVE = 0;
-	int PORT = 4444;
+	int PORT = 4443;
 
 	private System.Diagnostics.Process process;
 
 	void Start()
 	{
-
+	
 		playerManager = GameObject.FindObjectOfType<PlayerManager>();
 
 		process = System.Diagnostics.Process.Start((Application.dataPath) + "/Netzwerk/ServiceAnnouncer.jar");
+
+		UnityThreadHelper.CreateThread (() =>
+		{
+
+			TcpClient tcpClient = new TcpClient();
+			tcpClient.Connect(IPAddress.Parse (LocalIPAddress ()), 4442);
+			NetworkStream networkStream = tcpClient.GetStream();
+			StreamWriter clientStreamWriter = new  StreamWriter(networkStream);
+			
+			while(true)
+			{
+
+				clientStreamWriter.Write((PORT - 2) + "\n");
+				clientStreamWriter.Flush();
+			}
+
+		});
 
 		tcpListenerLeft = new TcpListener[4];
 		tcpListenerRight = new TcpListener[4];

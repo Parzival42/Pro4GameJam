@@ -57,10 +57,9 @@ public class PlayerManager : MonoBehaviour
 
 		GameObject obj;
 
-		if (playerCount == 1 && Input.GetJoystickNames ().Length == 0) {
+		if (playerCount == 1 && Input.GetJoystickNames ().Length == 0 && PLAYER == 0) {
 
 			Debug.Log("Player 1 joined with phone!");
-
 			SimplePlayer p = GameObject.FindObjectOfType<SimplePlayer>();
 			p.PhonePlayer = PLAYER;
 			p.IsPhone = true;
@@ -68,8 +67,6 @@ public class PlayerManager : MonoBehaviour
 		} else if (playerCount == 1) {
 			
 			Debug.Log("Player 2 joined with phone!");
-			
-			playerCount++;
 			obj = Instantiate(Resources.Load<GameObject>("Player")) as GameObject;
 			obj.GetComponent<SimplePlayer>().PhonePlayer = PLAYER;
 			obj.GetComponent<SimplePlayer>().IsPhone = true;
@@ -78,8 +75,6 @@ public class PlayerManager : MonoBehaviour
 		} else if (playerCount == 2) {
 			
 			Debug.Log("Player 3 joined with phone!");
-			
-			playerCount++;
 			obj = Instantiate(Resources.Load<GameObject>("Player")) as GameObject;
 			obj.GetComponent<SimplePlayer>().PhonePlayer = PLAYER;
 			obj.GetComponent<SimplePlayer>().IsPhone = true;
@@ -88,14 +83,14 @@ public class PlayerManager : MonoBehaviour
 		} else if (playerCount == 3) {
 			
 			Debug.Log("Player 4 joined with phone!");
-			
-			playerCount++;
 			obj = Instantiate(Resources.Load<GameObject>("Player")) as GameObject;
 			obj.GetComponent<SimplePlayer>().PhonePlayer = PLAYER;
 			obj.GetComponent<SimplePlayer>().IsPhone = true;
 			obj.transform.position = spawnPosition.position;
 			
 		}
+
+		playerCount++;
 
 	}
 

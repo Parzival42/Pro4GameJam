@@ -212,6 +212,8 @@ MonoBehaviour:
   automaticShoot: 1
   timeToShoot: .200000003
   rotationSpeed: 7
+  lineLength: 15
+  network: {fileID: 145162, guid: cec99b52f9981448b831767cc18a45f6, type: 2}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

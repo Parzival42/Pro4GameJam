@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.IO;
+using System;
 
 public class SimplePlayer : MonoBehaviour 
 {
@@ -25,12 +27,32 @@ public class SimplePlayer : MonoBehaviour
     //Determines if the right stick is used or not.
     private bool rightAnalogStickIsUsed = false;
 
-    //LineRenderer
+    //Line Renderer
     public float lineLength = 15f;
+
+	//tells the number of phone players currently involved
+	private int phonePlayer;
+
+	//tells wether the player is a phone or not
+	private Boolean isPhone = false;
+	
+	// acces the network data
+	private PlayerNetCommunicate playerComm;
+
+	public int PhonePlayer {
+		get {return phonePlayer;}
+		set {phonePlayer = value;}
+	}
+
+	public Boolean IsPhone {
+		set {isPhone = value;}
+	}
 
 	// Use this for initialization
 	void Start () 
     {
+		playerComm = GameObject.FindObjectOfType<PlayerNetCommunicate>();
+
         LineRenderer line = gameObject.AddComponent<LineRenderer>();
         line.material = new Material(Resources.Load<Material>("LineRendererMaterial"));
         line.SetColors(Color.white, Color.black);
@@ -42,8 +64,9 @@ public class SimplePlayer : MonoBehaviour
         name =  pManager.PlayerPrefix + "Player";
 
         Debug.Log(playerPrefix + "Player added!");
+
 	}
-	
+
 	// Update is called once per frame
 	void Update () 
     {
@@ -52,7 +75,13 @@ public class SimplePlayer : MonoBehaviour
 
     void FixedUpdate()
     {
-        HandleInput();
+
+		if (isPhone) {
+			HandlePhoneInput();
+		} else {
+			HandleInput ();
+		}
+        
     }
 
     private void HandleInput()
@@ -113,6 +142,67 @@ public class SimplePlayer : MonoBehaviour
         
     }
 
+	private void HandlePhoneInput()
+	{
+
+		float leftStickHorizontal = (float) (Math.Cos (DegreeToRadian (playerComm.angleLeft[phonePlayer])) * playerComm.distanceLeft[phonePlayer] / 300);
+		float leftStickVertical = (float)(Math.Sin (DegreeToRadian (playerComm.angleLeft[phonePlayer])) * playerComm.distanceLeft[phonePlayer] / 300);
+		float rightStickHorizontal = (float)(Math.Cos (DegreeToRadian (playerComm.angleRight[phonePlayer])) * playerComm.distanceRight[phonePlayer] / 300);
+		float rightStickVertical = (float)(Math.Sin (DegreeToRadian (playerComm.angleRight[phonePlayer])) * playerComm.distanceRight[phonePlayer] / 300);
+		
+		//Movement======================================================
+		if (leftStickHorizontal > analogStickTolerance)
+			rigidbody.AddForce(Vector3.right * movementSpeed * Mathf.Abs(leftStickHorizontal));
+		else if (leftStickHorizontal < -analogStickTolerance)
+			rigidbody.AddForce(-Vector3.right * movementSpeed * Mathf.Abs(leftStickHorizontal));
+		
+		if (leftStickVertical > analogStickTolerance)
+			rigidbody.AddForce(-Vector3.forward * movementSpeed * Mathf.Abs(leftStickVertical));
+		else if (leftStickVertical < -analogStickTolerance)
+			rigidbody.AddForce(Vector3.forward * movementSpeed * Mathf.Abs(leftStickVertical));
+		//==============================================================
+		
+		//Rotation======================================================
+		if (rightStickVertical > analogStickTolerance || rightStickVertical < -analogStickTolerance || rightStickHorizontal > analogStickTolerance || rightStickHorizontal < -analogStickTolerance)
+		{
+			rightAnalogStickIsUsed = true;
+			Vector3 angle = new Vector3(0, Mathf.Atan2(rightStickHorizontal, -rightStickVertical) * Mathf.Rad2Deg, 0);
+			transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(angle), Time.deltaTime * rotationSpeed);
+			
+			if (automaticShoot)
+				ShootBullet();
+		}
+		
+		/*Rotation when automatic shoot is true:
+         *  - Orient player to the direction where he is facing (Left analog stick)
+         *  - Check if the Right analog stick is used:
+         *      - If not -> Face him to the direction
+         *      - If yes -> Let the right analog stick do the facing.
+         */
+		if (!rightAnalogStickIsUsed)
+		{
+			//Check the analog stick tolerance
+			if (leftStickHorizontal > analogStickTolerance || leftStickHorizontal < -analogStickTolerance
+			    || leftStickVertical > analogStickTolerance || leftStickVertical < -analogStickTolerance)
+			{
+				Vector3 angle = new Vector3(0, Mathf.Atan2(rightStickHorizontal, -rightStickVertical) * Mathf.Rad2Deg, 0);
+				transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(angle), Time.deltaTime * rotationSpeed);
+			}
+		}
+		
+		//==============================================================
+		
+		//Shoot======================================================
+		if (!automaticShoot && playerComm.buttonPressed[phonePlayer] == 1)
+		{
+			ShootBullet();
+		}
+		//==============================================================
+		
+		rightAnalogStickIsUsed = false;
+		
+	}
+
     /// <summary>
     /// Shoots the bullet. A new bullet instance will be created.
     /// </summary>
@@ -148,4 +238,9 @@ public class SimplePlayer : MonoBehaviour
         yield return new WaitForSeconds(timeToShoot);
         canShoot = true;
     }
+
+	private double DegreeToRadian(int angle) {
+		return ((Math.PI * (double)angle / 180.0));
+	}
+	
 }

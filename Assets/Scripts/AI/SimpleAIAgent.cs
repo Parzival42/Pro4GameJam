@@ -22,17 +22,17 @@ public class SimpleAIAgent : MonoBehaviour {
 		
 		
 		if (distance < lookAtDistance){
-			renderer.material.color = Color.yellow;
+			GetComponent<Renderer>().material.color = Color.yellow;
 			agent.Stop();
 		}
 		
 		if (distance >= lookAtDistance){
-			renderer.material.color = Color.green;
+			GetComponent<Renderer>().material.color = Color.green;
 			agent.Stop();
 		}
 		
 		if (distance < attackRange){
-			renderer.material.color = Color.red;
+			GetComponent<Renderer>().material.color = Color.red;
 			agent.SetDestination(player.position);
 		}
 

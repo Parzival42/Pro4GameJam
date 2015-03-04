@@ -16,15 +16,15 @@ public class TestSimpleArtificialIntelligence : MonoBehaviour {
 		distance = Vector3.Distance(target.position , transform.position);
 
 		if (distance < lookAtDistance){
-			renderer.material.color = Color.yellow;
+			GetComponent<Renderer>().material.color = Color.yellow;
 			LookAt();
 		}
 
 		if (distance >= lookAtDistance){
-			renderer.material.color = Color.green;
+			GetComponent<Renderer>().material.color = Color.green;
 		}
 		if (distance < attackRange){
-			renderer.material.color = Color.red;
+			GetComponent<Renderer>().material.color = Color.red;
 			Attack();
 		}
 	}

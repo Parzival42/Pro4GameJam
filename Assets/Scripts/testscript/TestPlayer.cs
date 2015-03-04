@@ -20,19 +20,19 @@ public class TestPlayer : MonoBehaviour
 	void HandleInput() 
 	{
 		if (Input.GetAxis ("Horizontal") > 0) {
-			rigidbody.AddForce(Vector3.right*movementspeed);
+			GetComponent<Rigidbody>().AddForce(Vector3.right*movementspeed);
 		} else if(Input.GetAxis ("Horizontal") < 0) {
-			this.rigidbody.AddForce(Vector3.left*movementspeed);
+			this.GetComponent<Rigidbody>().AddForce(Vector3.left*movementspeed);
 		}
 
 		if (Input.GetAxis ("Vertical") > 0) {
-			this.rigidbody.AddForce(Vector3.forward*movementspeed);
+			this.GetComponent<Rigidbody>().AddForce(Vector3.forward*movementspeed);
 		} else if(Input.GetAxis ("Vertical") < 0) {
-			this.rigidbody.AddForce(-Vector3.forward*movementspeed);
+			this.GetComponent<Rigidbody>().AddForce(-Vector3.forward*movementspeed);
 		}
 
 		if (Input.GetAxis ("Jump") > 0) {
-			this.rigidbody.AddForce(Vector3.up*50);
+			this.GetComponent<Rigidbody>().AddForce(Vector3.up*50);
 			Debug.Log("PlayerJump");
 		}
 	}

@@ -29,7 +29,7 @@ public class SimpleAIAgent : MonoBehaviour {
 		}
 
 		if (distance < attackRange){
-			renderer.material.color = Color.red;
+			GetComponent<Renderer>().material.color = Color.red;
 			agent.SetDestination(player.position);
 		}
 

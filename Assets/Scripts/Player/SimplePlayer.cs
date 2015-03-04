@@ -152,14 +152,14 @@ public class SimplePlayer : MonoBehaviour
 		
 		//Movement======================================================
 		if (leftStickHorizontal > analogStickTolerance)
-			rigidbody.AddForce(Vector3.right * movementSpeed * Mathf.Abs(leftStickHorizontal));
+			GetComponent<Rigidbody>().AddForce(Vector3.right * movementSpeed * Mathf.Abs(leftStickHorizontal));
 		else if (leftStickHorizontal < -analogStickTolerance)
-			rigidbody.AddForce(-Vector3.right * movementSpeed * Mathf.Abs(leftStickHorizontal));
+			GetComponent<Rigidbody>().AddForce(-Vector3.right * movementSpeed * Mathf.Abs(leftStickHorizontal));
 		
 		if (leftStickVertical > analogStickTolerance)
-			rigidbody.AddForce(-Vector3.forward * movementSpeed * Mathf.Abs(leftStickVertical));
+			GetComponent<Rigidbody>().AddForce(-Vector3.forward * movementSpeed * Mathf.Abs(leftStickVertical));
 		else if (leftStickVertical < -analogStickTolerance)
-			rigidbody.AddForce(Vector3.forward * movementSpeed * Mathf.Abs(leftStickVertical));
+			GetComponent<Rigidbody>().AddForce(Vector3.forward * movementSpeed * Mathf.Abs(leftStickVertical));
 		//==============================================================
 		
 		//Rotation======================================================

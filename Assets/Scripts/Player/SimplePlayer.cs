@@ -30,6 +30,15 @@ public class SimplePlayer : MonoBehaviour
     //Line Renderer
     public float lineLength = 15f;
 
+    //Weapon
+    StandardWeapon weapon;
+    public StandardWeapon Weapon
+    {
+        get { return weapon; }
+        set { weapon = value; }
+    }
+
+
 	//tells the number of phone players currently involved
 	private int phonePlayer;
 
@@ -62,6 +71,8 @@ public class SimplePlayer : MonoBehaviour
         pManager = GameObject.FindObjectOfType<PlayerManager>();
         playerPrefix = pManager.PlayerPrefix;
         name =  pManager.PlayerPrefix + "Player";
+
+        weapon = null;
 
         Debug.Log(playerPrefix + "Player added!");
 
@@ -208,9 +219,11 @@ public class SimplePlayer : MonoBehaviour
     /// </summary>
     private void ShootBullet()
     {
-        if (canShoot)
+        Debug.Log("Weapon: " + weapon);
+        if (weapon != null && canShoot)
         {
-            GameObject obj = Instantiate(Resources.Load<GameObject>("Bullet")) as GameObject;
+            Debug.Log("Instantiate: " + weapon.BulletPrefabName);
+            GameObject obj = Instantiate(Resources.Load<GameObject>(weapon.BulletPrefabName)) as GameObject;
 
             BulletScript bullet = obj.GetComponent<BulletScript>();
             bullet.Direction = transform.forward;
@@ -239,8 +252,8 @@ public class SimplePlayer : MonoBehaviour
         canShoot = true;
     }
 
-	private double DegreeToRadian(int angle) {
+	private double DegreeToRadian(int angle) 
+    {
 		return ((Math.PI * (double)angle / 180.0));
 	}
-	
 }

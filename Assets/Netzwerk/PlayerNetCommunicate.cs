@@ -22,11 +22,14 @@ public class PlayerNetCommunicate : MonoBehaviour {
 	public IPEndPoint[] IPLeft;
 	public IPEndPoint[] IPRight;
 
+	Boolean createdRight = true;
+	Boolean createdLeft = true;
 	
 	Boolean left = false;
 	Boolean right = false;
 
 	int PLAYER = 0;
+	int PLAYER_ACTIVE = 0;
 	int PORT = 4443;
 	
 	void Start()
@@ -55,23 +58,36 @@ public class PlayerNetCommunicate : MonoBehaviour {
 			distanceRight[i] = 0;
 			buttonPressed[i] = 0;
 
-			udpListenerLeft[i] = new UdpClient(PORT);
-			IPLeft[i] = new IPEndPoint(IPAddress.Parse(LocalIPAddress ()), PORT);
-
-			PORT++;
-
-			udpListenerRight[i] = new UdpClient(PORT);
-			IPRight[i] = new IPEndPoint(IPAddress.Parse(LocalIPAddress ()), PORT);
-
-			PORT++;
-
-			InitializeListenerUdp ();
-
-			//PLAYER++;
-
 		}
 
-		Debug.Log (LocalIPAddress ());
+		int counter = 0;
+
+		while (true) {
+			if (createdLeft && createdRight) {
+
+				createdLeft = false;
+				createdRight = false;
+
+				udpListenerLeft[counter] = new UdpClient(PORT);
+				IPLeft[counter] = new IPEndPoint(IPAddress.Parse(LocalIPAddress ()), PORT);
+				
+				PORT++;
+				
+				udpListenerRight[counter] = new UdpClient(PORT);
+				IPRight[counter] = new IPEndPoint(IPAddress.Parse(LocalIPAddress ()), PORT);
+				
+				PORT++;
+				
+				InitializeListenerUdp ();
+				
+				PLAYER++;
+				counter++;
+
+				if (counter == 4) {
+					break;
+				}
+			}
+		}
 
 	}
 
@@ -82,6 +98,7 @@ public class PlayerNetCommunicate : MonoBehaviour {
 			int slot = PLAYER;
 			Debug.Log ("Creating left listener for player " + slot + " on port: " + IPLeft[slot].Port);
 			Boolean taken = false;
+			createdLeft = true;
 
 			while (true) {
 				byte[] answerByte = udpListenerLeft[slot].Receive (ref IPLeft[slot]);
@@ -114,6 +131,11 @@ public class PlayerNetCommunicate : MonoBehaviour {
 							if (taken == false) {
 								byte[] send = Encoding.ASCII.GetBytes("hello");
 								udpListenerLeft[slot].Send(send, send.Length, IPLeft[slot]);
+								playerManager.HandlePhonePlayerJoin(slot);
+								PLAYER_ACTIVE++;
+							} else {
+								byte[] send = Encoding.ASCII.GetBytes("sorry");
+								udpListenerLeft[slot].Send(send, send.Length, IPLeft[slot]);
 							}
 						}
 					}
@@ -127,6 +149,7 @@ public class PlayerNetCommunicate : MonoBehaviour {
 		                               {
 			int slot = PLAYER;
 			Debug.Log ("Creating right listener for player " + slot + " on port: " + IPRight[slot].Port);
+			createdRight = true;
 
 			while (true) {
 				byte[] byteBuffer = udpListenerRight[slot].Receive (ref IPRight[slot]);
@@ -175,13 +198,6 @@ public class PlayerNetCommunicate : MonoBehaviour {
 	}
 
 	void Update () {
-		if (left && right) {
-			right = false;
-			left = false;
-			playerManager.HandlePhonePlayerJoin(PLAYER);
-			//PLAYER++;
-			//InitializeListenerTcp ();
-		}
 	}
 
 	void OnApplicationQuit()
@@ -197,7 +213,7 @@ public class PlayerNetCommunicate : MonoBehaviour {
 
 		try
 		{
-			for (int i = 0; i < PLAYER; i++) {
+			for (int i = 0; i < PLAYER_ACTIVE - 1; i++) {
 				udpListenerLeft[i].Close();
 				udpListenerRight[i].Close ();
 			}

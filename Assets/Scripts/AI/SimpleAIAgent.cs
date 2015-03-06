@@ -2,13 +2,13 @@
 using System.Collections;
 
 public class SimpleAIAgent : MonoBehaviour {
-	private GameObject[] players;
+	private GameObject[] players;		// Array of active players in the game
 	private Transform dummyPlayer;		// Used to calculate the nearest player.
-	private Transform player;
-	private NavMeshAgent agent;
-	private int playerIndex;
-	private float distance = 0.0f;
-	public int attackRange;
+	private Transform player;			// The target player
+	private NavMeshAgent agent;			// The baked navigation mesh
+	private int playerIndex;			// Index of the players array
+	private float distance = 0.0f;		// Distance between player and enemy
+
 
 	// Use this for initialization
 	void Start () {
@@ -28,10 +28,14 @@ public class SimpleAIAgent : MonoBehaviour {
 			distance = Vector3.Distance(dummyPlayer.position , transform.position);
 		}
 
+		agent.SetDestination(player.position);
+
+		/*
 		if (distance < attackRange){
 			GetComponent<Renderer>().material.color = Color.red;
 			agent.SetDestination(player.position);
 		}
+		*/
 
 	}
 }

@@ -92,8 +92,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06ff8b0821c462f48a9fd06e19067623, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 350
-  enemyName: 
+  health: 450
+  enemyName: BigMob
 --- !u!114 &11492140
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -39,17 +39,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da53352fb1e1d814faf5134418a74160, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnTrashMob: 0
-  trashMob: {fileID: 0}
-  spawnTimeTrashMob: 0
-  spawnStart: 0
+  spawnTrashMob: 1
+  trashMob: {fileID: 163242, guid: 5f06280094b715d4fbf13377e8af92c2, type: 2}
+  spawnTimeTrashMob: 3
+  spawnStartTrashMob: 0
   spawnPointsTrashMob: []
-  limitTrashMob: 0
-  spawnBigMob: 0
-  bigMob: {fileID: 0}
-  spawnTimeBigMob: 0
+  limitTrashMob: 50
+  spawnBigMob: 1
+  bigMob: {fileID: 116998, guid: 92f4de9c2686b99439d261c20772a882, type: 2}
+  spawnTimeBigMob: 20
+  spawnStartBigMob: 0
   spawnPointsBigMob: []
-  limitBigMob: 0
+  limitBigMob: 5
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

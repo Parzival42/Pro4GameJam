@@ -60,33 +60,25 @@ public class PlayerNetCommunicate : MonoBehaviour {
 
 		}
 
-		int counter = 0;
+		Boolean done = false;
 
-		while (true) {
-			if (createdLeft && createdRight) {
-
-				createdLeft = false;
-				createdRight = false;
-
-				udpListenerLeft[counter] = new UdpClient(PORT);
-				IPLeft[counter] = new IPEndPoint(IPAddress.Parse(LocalIPAddress ()), PORT);
-				
-				PORT++;
-				
-				udpListenerRight[counter] = new UdpClient(PORT);
-				IPRight[counter] = new IPEndPoint(IPAddress.Parse(LocalIPAddress ()), PORT);
-				
-				PORT++;
-				
-				InitializeListenerUdp ();
-				
-				PLAYER++;
-				counter++;
-
-				if (counter == 4) {
-					break;
-				}
-			}
+		for (int i = 0; i < 1; i++) {
+					
+					createdLeft = false;
+					createdRight = false;
+					
+					udpListenerLeft[i] = new UdpClient(PORT);
+					IPLeft[i] = new IPEndPoint(IPAddress.Parse(LocalIPAddress ()), PORT);
+					
+					PORT++;
+					
+					udpListenerRight[i] = new UdpClient(PORT);
+					IPRight[i] = new IPEndPoint(IPAddress.Parse(LocalIPAddress ()), PORT);
+					
+					PORT++;
+					
+					InitializeListenerUdp ();
+		
 		}
 
 	}

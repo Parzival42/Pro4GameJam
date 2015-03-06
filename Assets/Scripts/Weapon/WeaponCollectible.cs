@@ -20,6 +20,8 @@ public class WeaponCollectible : MonoBehaviour
                 weapon.BulletPrefabName = bulletPrefabName;
                 break;
             case WeaponType.FastWeapon:
+                weapon = new StandardWeapon();
+                weapon.BulletPrefabName = bulletPrefabName;
                 break;
         }
     }

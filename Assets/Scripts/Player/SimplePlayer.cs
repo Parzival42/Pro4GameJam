@@ -225,17 +225,16 @@ public class SimplePlayer : MonoBehaviour
             Debug.Log("Instantiate: " + weapon.BulletPrefabName);
             GameObject obj = Instantiate(Resources.Load<GameObject>(weapon.BulletPrefabName)) as GameObject;
 
-            BulletScript bullet = obj.GetComponent<BulletScript>();
+            BulletScript bullet = obj.GetComponent<BulletScript>(); ;
+            
             bullet.Direction = transform.forward;
             bullet.transform.position = transform.FindChild("BulletSpawnPoint").transform.position;
-
             bullet.name = "Bullet";
+            (bullet as IBullet).Shoot();
+
 
             canShoot = false;
             StartCoroutine(WaitForShoot());
-
-            //TODO: implement functionality in Bullet class
-            Destroy(obj, bullet.lifeTime);
         }
     }
 

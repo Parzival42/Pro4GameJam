@@ -1,14 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BulletScript : MonoBehaviour 
+public class BulletScript : MonoBehaviour, IBullet
 {
 	public float damage = 50;
     public float speed = 10;
     public float lifeTime = 5f;
+    private bool shootEnabled = false;
 
-
-    private Vector3 direction;
+    protected Vector3 direction;
 
     public Vector3 Direction
     {
@@ -17,23 +17,31 @@ public class BulletScript : MonoBehaviour
     }
 
 	// Use this for initialization
-	void Start () 
+	protected virtual void Start () 
     {
-        //StartCoroutine(WaitForDestruction());
+        
 	}
 	
 	// Update is called once per frame
-	void Update () 
+    protected virtual void Update() 
     {
-        MoveBullet();
+        if(shootEnabled)
+            MoveBullet();
 	}
 
-    private void MoveBullet()
+    public virtual void Shoot()
+    {
+        Debug.Log("BulletScript: Shoot");
+        shootEnabled = true;
+        StartCoroutine(WaitForDestruction());
+    }
+
+    protected virtual void MoveBullet()
     {
         transform.Translate(direction * speed * Time.deltaTime);
     }
 
-	void OnTriggerEnter(Collider collider)
+    protected virtual void OnTriggerEnter(Collider collider)
     {
 		//Debug.Log("Lololo bullet hit!");
 		if (collider.gameObject.tag == "Enemy")
@@ -44,9 +52,9 @@ public class BulletScript : MonoBehaviour
 		}
 	}
 
-    //IEnumerator WaitForDestruction()
-    //{
-    //    yield return new WaitForSeconds(lifeTime);
-    //    Destroy(this);
-    //}
+    IEnumerator WaitForDestruction()
+    {
+        yield return new WaitForSeconds(lifeTime);
+        Destroy(gameObject);
+    }
 }

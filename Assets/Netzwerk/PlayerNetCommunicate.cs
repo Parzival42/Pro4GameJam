@@ -13,7 +13,10 @@ public class PlayerNetCommunicate : MonoBehaviour {
 
 	private UdpClient[] udpListenerLeft;
 	private UdpClient[] udpListenerRight;
+	private UdpClient socket;
 
+	UnityThreading.ActionThread myThread;
+	
 	public IPEndPoint[] IPLeft;
 	public IPEndPoint[] IPRight;
 
@@ -22,9 +25,7 @@ public class PlayerNetCommunicate : MonoBehaviour {
 	public int[] angleRight;
 	public int[] distanceRight;
 	public int[] buttonPressed;
-
-	Boolean[] playerCanBeAdded;
-
+	
 	Boolean createdRight = true;
 	Boolean createdLeft = true;
 	
@@ -37,10 +38,10 @@ public class PlayerNetCommunicate : MonoBehaviour {
 	
 	void Start()
 	{
+
+		BroadcastIP ();
 	
 		playerManager = GameObject.FindObjectOfType<PlayerManager>();
-
-		System.Diagnostics.Process.Start((Application.dataPath) + "/Netzwerk/ServiceAnnouncer.jar");
 
 		udpListenerLeft = new UdpClient[4];
 		udpListenerRight = new UdpClient[4];
@@ -53,8 +54,6 @@ public class PlayerNetCommunicate : MonoBehaviour {
 		angleRight = new int[4];
 		distanceRight = new int[4];
 		buttonPressed = new int[4];
-
-		playerCanBeAdded = new Boolean[4];
 
 		for (int i = 0; i < 1; i++) {
 
@@ -95,12 +94,39 @@ public class PlayerNetCommunicate : MonoBehaviour {
 
 	}
 
+	void BroadcastIP () {
+
+		myThread = UnityThreadHelper.CreateThread (() =>
+		{
+
+			try {
+
+				socket = new UdpClient (8888);
+				
+				while (true) {
+
+					IPEndPoint endpoint = new IPEndPoint (IPAddress.Parse (LocalIPAddress ()), PORT);
+					byte[] recvBuf = socket.Receive (ref endpoint);
+
+					String message = System.Text.Encoding.Default.GetString (recvBuf);
+					message = message.Trim ();
+
+					if (message.Equals ("IPREQUEST")) {
+						byte[] send = Encoding.ASCII.GetBytes ("IPANSWER");
+						socket.Send (send, send.Length, endpoint);						
+					}
+				}
+			} catch (Exception e) {
+				//Debug.Log (e.Message);
+			}});
+	}
+
 	void InitializeListenerUdp() {
 
 		UnityThreadHelper.CreateThread(() =>
 		                               {
 			int slot = PLAYER;
-			Debug.Log ("Creating left listener for player " + slot + " on port: " + IPLeft[slot].Port);
+			//Debug.Log ("Creating left listener for player " + slot + " on port: " + IPLeft[slot].Port);
 			Boolean taken = false;
 			createdLeft = true;
 
@@ -133,7 +159,8 @@ public class PlayerNetCommunicate : MonoBehaviour {
 							if (taken == false) {
 								byte[] send = Encoding.ASCII.GetBytes("hello");
 								udpListenerLeft[slot].Send(send, send.Length, IPLeft[slot]);
-								playerCanBeAdded[slot] = true;
+								UnityThreadHelper.Dispatcher.Dispatch(() => playerManager.HandlePhonePlayerJoin(slot));
+								PLAYER_ACTIVE++;
 								taken = true;
 							} else {
 								byte[] send = Encoding.ASCII.GetBytes("sorry");
@@ -150,7 +177,7 @@ public class PlayerNetCommunicate : MonoBehaviour {
 		UnityThreadHelper.CreateThread(() =>
 		                               {
 			int slot = PLAYER;
-			Debug.Log ("Creating right listener for player " + slot + " on port: " + IPRight[slot].Port);
+			//Debug.Log ("Creating right listener for player " + slot + " on port: " + IPRight[slot].Port);
 			createdRight = true;
 
 			while (true) {
@@ -197,30 +224,14 @@ public class PlayerNetCommunicate : MonoBehaviour {
 
 	}
 
-	void Update () {
-		for (int i = 0; i < 4; i++) {
-			if (playerCanBeAdded[i] == true) {
-				playerCanBeAdded[i] = false;
-				playerManager.HandlePhonePlayerJoin(i);
-				PLAYER_ACTIVE++;
-			}
-		}
-
-	}
-	
 	void OnApplicationQuit()
 	{
-	
-		foreach (System.Diagnostics.Process p in System.Diagnostics.Process.GetProcessesByName("java")) {
-			p.CloseMainWindow();
-		}
 
-		foreach (System.Diagnostics.Process p in System.Diagnostics.Process.GetProcessesByName("javaw")) {
-			p.CloseMainWindow();
-		}
+		myThread.Exit ();
 
 		try
 		{
+			socket.Close();
 			for (int i = 0; i < PLAYER; i++) {
 				udpListenerLeft[i].Close();
 				udpListenerRight[i].Close ();
@@ -248,113 +259,3 @@ public class PlayerNetCommunicate : MonoBehaviour {
 		return localIP;
 	}
 }
-
-
-
-
-
-
-
-
-
-/**void InitializeListenerTcp() {
-
-		tcpListenerLeft[PLAYER] = new TcpListener (IPAddress.Parse (LocalIPAddress ()), PORT);
-		Debug.Log("Created Listener on Port: " + PORT);
-		tcpListenerLeft[PLAYER].Start();
-		PORT++;
-		
-		tcpListenerRight[PLAYER] = new TcpListener (IPAddress.Parse (LocalIPAddress ()), PORT);
-		Debug.Log("Created Listener on Port: " + PORT);
-		tcpListenerRight[PLAYER].Start();
-		PORT++;
-		
-		UnityThreadHelper.CreateThread(() =>
-		                               {
-			int slot = PLAYER;
-			NetworkStream streamLeft = tcpListenerLeft[slot].AcceptTcpClient().GetStream();
-			Debug.Log("Left Connection accepted.");
-			PLAYER_ACTIVE++;
-			
-			streamReadersLeft[slot] = new StreamReader(streamLeft);
-			left = true;
-
-			while (true) {
-				
-				String data = streamReadersLeft[slot].ReadLine();
-				String[] tokens = data.Split(' ');
-				
-				if (tokens.Length == 2) {
-					if (tokens[0] != "") {
-						angleLeft[slot] = int.Parse(tokens[0].Substring(1));
-					}
-					
-					if (tokens[1] != "") {
-						distanceLeft[slot] = int.Parse(tokens[1].Substring(1));
-					}
-					
-				} else if (tokens.Length == 1) {
-					
-					if (tokens[0] != "") {
-						if (tokens[0].Substring(0,1).Equals("0")) {
-							angleLeft[slot] = int.Parse(tokens[0].Substring(1));
-						}
-						
-						if (tokens[0].Substring(0,1).Equals("1")) {
-							distanceLeft[slot] = int.Parse(tokens[0].Substring(1));
-						}
-					}
-				}
-				
-			};
-			
-		});
-		
-		UnityThreadHelper.CreateThread(() =>
-		                               {
-
-			int slot = PLAYER;
-			NetworkStream streamRight = tcpListenerRight[slot].AcceptTcpClient().GetStream();
-			Debug.Log("Right Connection accepted.");
-			
-			streamReadersRight[slot] = new StreamReader(streamRight);
-			right = true;
-
-			while (true) {
-				
-				String data = streamReadersRight[slot].ReadLine();
-				String[] tokens = data.Split(' ');
-
-				if (tokens.Length == 2) {
-					if (tokens[0] != "") {
-						angleRight[slot] = int.Parse(tokens[0].Substring(1));
-					}
-					
-					if (tokens[1] != "") {
-						distanceRight[slot] = int.Parse(tokens[1].Substring(1));
-					}
-					
-				} else if (tokens.Length == 1) {
-					
-					if (tokens[0] != "") {
-						if (tokens[0].Substring(0,1).Equals("0")) {
-							angleRight[slot] = int.Parse(tokens[0].Substring(1));
-						}
-						
-						if (tokens[0].Substring(0,1).Equals("1")) {
-							distanceRight[slot] = int.Parse(tokens[0].Substring(1));
-						}
-
-						if (tokens[0].Substring(0,1).Equals("a")) {
-							if (data.Substring(1).Equals("0")) {
-								buttonPressed[slot] = 0;
-							} else {
-								buttonPressed[slot] = 1;
-							}
-						}
-					}
-				}
-			};
-		});
-
-	} **/

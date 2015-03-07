@@ -232,7 +232,7 @@ public class PlayerNetCommunicate : MonoBehaviour {
 		try
 		{
 			socket.Close();
-			for (int i = 0; i < PLAYER; i++) {
+			for (int i = 0; i < PLAYER + 1; i++) {
 				udpListenerLeft[i].Close();
 				udpListenerRight[i].Close ();
 			}

@@ -65,24 +65,32 @@ public class PlayerNetCommunicate : MonoBehaviour {
 			buttonPressed[i] = 0;
 
 		}
+
+		int counter = 0;
 	
-		for (int i = 0; i < 1; i++) {
+		while (counter < 4) {
+
+			if (createdLeft && createdRight) {
+				createdLeft = false;
+				createdRight = false;
+				
+				udpListenerLeft[counter] = new UdpClient(PORT);
+				IPLeft[counter] = new IPEndPoint(IPAddress.Parse(LocalIPAddress ()), PORT);
+				
+				PORT++;
+				
+				udpListenerRight[counter] = new UdpClient(PORT);
+				IPRight[counter] = new IPEndPoint(IPAddress.Parse(LocalIPAddress ()), PORT);
+				
+				PORT++;
+				
+				PLAYER = counter;
+				
+				InitializeListenerUdp ();
+
+				counter++;
+			}
 					
-			createdLeft = false;
-			createdRight = false;
-					
-			udpListenerLeft[i] = new UdpClient(PORT);
-			IPLeft[i] = new IPEndPoint(IPAddress.Parse(LocalIPAddress ()), PORT);
-					
-			PORT++;
-					
-			udpListenerRight[i] = new UdpClient(PORT);
-			IPRight[i] = new IPEndPoint(IPAddress.Parse(LocalIPAddress ()), PORT);
-					
-			PORT++;
-					
-			InitializeListenerUdp ();
-		
 		}
 
 	}
@@ -95,7 +103,6 @@ public class PlayerNetCommunicate : MonoBehaviour {
 			Debug.Log ("Creating left listener for player " + slot + " on port: " + IPLeft[slot].Port);
 			Boolean taken = false;
 			createdLeft = true;
-			playerCanBeAdded[slot] = true;
 
 			while (true) {
 				byte[] answerByte = udpListenerLeft[slot].Receive (ref IPLeft[slot]);
@@ -126,6 +133,7 @@ public class PlayerNetCommunicate : MonoBehaviour {
 							if (taken == false) {
 								byte[] send = Encoding.ASCII.GetBytes("hello");
 								udpListenerLeft[slot].Send(send, send.Length, IPLeft[slot]);
+								playerCanBeAdded[slot] = true;
 								taken = true;
 							} else {
 								byte[] send = Encoding.ASCII.GetBytes("sorry");

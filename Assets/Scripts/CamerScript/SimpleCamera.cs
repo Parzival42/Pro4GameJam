@@ -3,13 +3,21 @@ using System.Collections;
 
 public class SimpleCamera : MonoBehaviour 
 {
-
     Transform followObject;
     public float x_offset = 0;
     public float z_offset = 0;
 
     GameObject[] players;
     Bounds playerBounds;
+
+    private Vector3 velocity = Vector3.zero;
+    public float cameraDamping = 1f;
+    public float maxSpeed = 1f;
+
+    float lastFrame = 0f;
+    float currentFrame = 0f;
+    float myDelta = 0f;
+    float avg = 0f;
 
 	// Use this for initialization
 	void Start () 
@@ -25,13 +33,24 @@ public class SimpleCamera : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
     {
-        MoveCamera();
+        CalculateDeltaTime();
+        
 
         if (players != null)
         {
             CalculatePlayerBoundingBox();
         }
 	}
+
+    void FixedUpdate()
+    {
+        
+    }
+
+    void LateUpdate()
+    {
+        MoveCamera();
+    }
 
     /// <summary>
     /// Calculate bounding box over all players.
@@ -64,11 +83,25 @@ public class SimpleCamera : MonoBehaviour
     }
 
     /// <summary>
+    /// Calculate custom delta time
+    /// </summary>
+    private void CalculateDeltaTime()
+    {
+        currentFrame = Time.realtimeSinceStartup;
+        myDelta = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+    }
+
+    /// <summary>
     /// Follow the center of the bounding box.
     /// </summary>
     private void MoveCamera()
     {
-        transform.position = new Vector3(playerBounds.center.x + x_offset, transform.position.y, playerBounds.center.z + z_offset);
+        avg = (Time.deltaTime + Time.smoothDeltaTime + myDelta) * 0.3333333f;
+        Vector3 newPosition = new Vector3(playerBounds.center.x + x_offset, transform.position.y, playerBounds.center.z + z_offset);
+        //transform.position = Vector3.Lerp(transform.position, newPosition, avg);
+
+        transform.position = Vector3.SmoothDamp(transform.position, newPosition, ref velocity, cameraDamping, maxSpeed, avg);
     }
 
     void OnDrawGizmos()

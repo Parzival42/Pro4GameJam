@@ -65,11 +65,14 @@ public class PlayerNetCommunicate : MonoBehaviour {
 
 		}
 
-		int counter = 0;
+		int counter = -1;
 	
-		while (counter < 4) {
+		while (counter < 3) {
 
 			if (createdLeft && createdRight) {
+
+				counter++;
+
 				createdLeft = false;
 				createdRight = false;
 				
@@ -87,7 +90,6 @@ public class PlayerNetCommunicate : MonoBehaviour {
 				
 				InitializeListenerUdp ();
 
-				counter++;
 			}
 					
 		}
@@ -126,7 +128,7 @@ public class PlayerNetCommunicate : MonoBehaviour {
 		UnityThreadHelper.CreateThread(() =>
 		                               {
 			int slot = PLAYER;
-			//Debug.Log ("Creating left listener for player " + slot + " on port: " + IPLeft[slot].Port);
+			Debug.Log ("Creating left listener for player " + slot + " on port: " + IPLeft[slot].Port);
 			Boolean taken = false;
 			createdLeft = true;
 
@@ -177,7 +179,7 @@ public class PlayerNetCommunicate : MonoBehaviour {
 		UnityThreadHelper.CreateThread(() =>
 		                               {
 			int slot = PLAYER;
-			//Debug.Log ("Creating right listener for player " + slot + " on port: " + IPRight[slot].Port);
+			Debug.Log ("Creating right listener for player " + slot + " on port: " + IPRight[slot].Port);
 			createdRight = true;
 
 			while (true) {

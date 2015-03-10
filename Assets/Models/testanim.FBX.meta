@@ -1,0 +1,191 @@
+fileFormatVersion: 2
+guid: ce62073e1dff1f34a8bb4ec0d08499f8
+timeCreated: 1425980735
+licenseType: Free
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: Box001
+    100002: element_
+    100004: element_LArm1
+    100006: element_LArm2
+    100008: element_LArmCollarbone
+    100010: element_LArmPalm
+    100012: element_LLeg1
+    100014: element_LLegPlatform
+    100016: element_Pelvis
+    100018: element_RArm1
+    100020: element_RArm2
+    100022: element_RArmCollarbone
+    100024: element_RArmPalm
+    100026: element_RLeg1
+    100028: element_RLegPlatform
+    100030: element_Spine1
+    100032: element_Spine2
+    100034: element_Spine3
+    100036: element_Spine4
+    100038: element_Spine5
+    100040: element_Torso
+    100042: element_TorsoBone001_neck
+    100044: element_TorsoBone001_neckBone001_head
+    100046: //RootNode
+    400000: Box001
+    400002: element_
+    400004: element_LArm1
+    400006: element_LArm2
+    400008: element_LArmCollarbone
+    400010: element_LArmPalm
+    400012: element_LLeg1
+    400014: element_LLegPlatform
+    400016: element_Pelvis
+    400018: element_RArm1
+    400020: element_RArm2
+    400022: element_RArmCollarbone
+    400024: element_RArmPalm
+    400026: element_RLeg1
+    400028: element_RLegPlatform
+    400030: element_Spine1
+    400032: element_Spine2
+    400034: element_Spine3
+    400036: element_Spine4
+    400038: element_Spine5
+    400040: element_Torso
+    400042: element_TorsoBone001_neck
+    400044: element_TorsoBone001_neckBone001_head
+    400046: //RootNode
+    4300000: Box001
+    7400000: walk
+    9500000: //RootNode
+    13700000: Box001
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: walk
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: 100
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Box001
+        weight: 1
+      - path: element_
+        weight: 1
+      - path: element_LLegPlatform
+        weight: 1
+      - path: element_Pelvis
+        weight: 1
+      - path: element_Pelvis/element_LLeg1
+        weight: 1
+      - path: element_Pelvis/element_RLeg1
+        weight: 1
+      - path: element_Pelvis/element_Spine1
+        weight: 1
+      - path: element_Pelvis/element_Spine1/element_Spine2
+        weight: 1
+      - path: element_Pelvis/element_Spine1/element_Spine2/element_Spine3
+        weight: 1
+      - path: element_Pelvis/element_Spine1/element_Spine2/element_Spine3/element_Spine4
+        weight: 1
+      - path: element_Pelvis/element_Spine1/element_Spine2/element_Spine3/element_Spine4/element_Spine5
+        weight: 1
+      - path: element_Pelvis/element_Spine1/element_Spine2/element_Spine3/element_Spine4/element_Spine5/element_Torso
+        weight: 1
+      - path: element_Pelvis/element_Spine1/element_Spine2/element_Spine3/element_Spine4/element_Spine5/element_Torso/element_LArmCollarbone
+        weight: 1
+      - path: element_Pelvis/element_Spine1/element_Spine2/element_Spine3/element_Spine4/element_Spine5/element_Torso/element_LArmCollarbone/element_LArm1
+        weight: 1
+      - path: element_Pelvis/element_Spine1/element_Spine2/element_Spine3/element_Spine4/element_Spine5/element_Torso/element_LArmCollarbone/element_LArm1/element_LArm2
+        weight: 1
+      - path: element_Pelvis/element_Spine1/element_Spine2/element_Spine3/element_Spine4/element_Spine5/element_Torso/element_LArmCollarbone/element_LArm1/element_LArm2/element_LArmPalm
+        weight: 1
+      - path: element_Pelvis/element_Spine1/element_Spine2/element_Spine3/element_Spine4/element_Spine5/element_Torso/element_RArmCollarbone
+        weight: 1
+      - path: element_Pelvis/element_Spine1/element_Spine2/element_Spine3/element_Spine4/element_Spine5/element_Torso/element_RArmCollarbone/element_RArm1
+        weight: 1
+      - path: element_Pelvis/element_Spine1/element_Spine2/element_Spine3/element_Spine4/element_Spine5/element_Torso/element_RArmCollarbone/element_RArm1/element_RArm2
+        weight: 1
+      - path: element_Pelvis/element_Spine1/element_Spine2/element_Spine3/element_Spine4/element_Spine5/element_Torso/element_RArmCollarbone/element_RArm1/element_RArm2/element_RArmPalm
+        weight: 1
+      - path: element_Pelvis/element_Spine1/element_Spine2/element_Spine3/element_Spine4/element_Spine5/element_Torso/element_TorsoBone001_neck
+        weight: 1
+      - path: element_Pelvis/element_Spine1/element_Spine2/element_Spine3/element_Spine4/element_Spine5/element_Torso/element_TorsoBone001_neck/element_TorsoBone001_neckBone001_head
+        weight: 1
+      - path: element_RLegPlatform
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

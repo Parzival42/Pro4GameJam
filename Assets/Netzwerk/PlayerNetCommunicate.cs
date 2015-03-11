@@ -25,6 +25,7 @@ public class PlayerNetCommunicate : MonoBehaviour {
 	public int[] angleRight;
 	public int[] distanceRight;
 	public int[] buttonPressed;
+	public int[] stickSize;
 	
 	Boolean createdRight = true;
 	Boolean createdLeft = true;
@@ -54,6 +55,7 @@ public class PlayerNetCommunicate : MonoBehaviour {
 		angleRight = new int[4];
 		distanceRight = new int[4];
 		buttonPressed = new int[4];
+		stickSize = new int[4];
 
 		for (int i = 0; i < 1; i++) {
 
@@ -62,6 +64,7 @@ public class PlayerNetCommunicate : MonoBehaviour {
 			angleRight[i] = 0;
 			distanceRight[i] = 0;
 			buttonPressed[i] = 0;
+			stickSize[i] = 0;
 
 		}
 
@@ -128,7 +131,7 @@ public class PlayerNetCommunicate : MonoBehaviour {
 		UnityThreadHelper.CreateThread(() =>
 		                               {
 			int slot = PLAYER;
-			Debug.Log ("Creating left listener for player " + slot + " on port: " + IPLeft[slot].Port);
+			//Debug.Log ("Creating left listener for player " + slot + " on port: " + IPLeft[slot].Port);
 			Boolean taken = false;
 			createdLeft = true;
 
@@ -139,12 +142,16 @@ public class PlayerNetCommunicate : MonoBehaviour {
 				String[] tokens = data.Split(' ');
 
 				if (tokens.Length == 2) {
-					if (tokens[0] != "") {
-						angleLeft[slot] = int.Parse(tokens[0].Substring(1));
-					}
-					
-					if (tokens[1] != "") {
-						distanceLeft[slot] = int.Parse(tokens[1].Substring(1));
+					if (tokens[0] != "" && tokens[0].Equals("sticksize")) {
+						stickSize[slot] = int.Parse(tokens[1]);
+					} else {
+						if (tokens[0] != "") {
+							angleLeft[slot] = int.Parse(tokens[0].Substring(1));
+						}
+						
+						if (tokens[1] != "") {
+							distanceLeft[slot] = int.Parse(tokens[1].Substring(1));
+						}
 					}
 					
 				} else if (tokens.Length == 1) {
@@ -179,7 +186,7 @@ public class PlayerNetCommunicate : MonoBehaviour {
 		UnityThreadHelper.CreateThread(() =>
 		                               {
 			int slot = PLAYER;
-			Debug.Log ("Creating right listener for player " + slot + " on port: " + IPRight[slot].Port);
+			//Debug.Log ("Creating right listener for player " + slot + " on port: " + IPRight[slot].Port);
 			createdRight = true;
 
 			while (true) {

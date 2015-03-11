@@ -156,10 +156,10 @@ public class SimplePlayer : MonoBehaviour
 	private void HandlePhoneInput()
 	{
 
-		float leftStickHorizontal = (float) (Math.Cos (DegreeToRadian (playerComm.angleLeft[phonePlayer])) * playerComm.distanceLeft[phonePlayer] / 300);
-		float leftStickVertical = (float)(Math.Sin (DegreeToRadian (playerComm.angleLeft[phonePlayer])) * playerComm.distanceLeft[phonePlayer] / 300);
-		float rightStickHorizontal = (float)(Math.Cos (DegreeToRadian (playerComm.angleRight[phonePlayer])) * playerComm.distanceRight[phonePlayer] / 300);
-		float rightStickVertical = (float)(Math.Sin (DegreeToRadian (playerComm.angleRight[phonePlayer])) * playerComm.distanceRight[phonePlayer] / 300);
+		float leftStickHorizontal = (float) (Math.Cos (DegreeToRadian (playerComm.angleLeft[phonePlayer])) * playerComm.distanceLeft[phonePlayer] / playerComm.stickSize[phonePlayer]);
+		float leftStickVertical = (float)(Math.Sin (DegreeToRadian (playerComm.angleLeft[phonePlayer])) * playerComm.distanceLeft[phonePlayer] / playerComm.stickSize[phonePlayer]);
+		float rightStickHorizontal = (float)(Math.Cos (DegreeToRadian (playerComm.angleRight[phonePlayer])) * playerComm.distanceRight[phonePlayer] / playerComm.stickSize[phonePlayer]);
+		float rightStickVertical = (float)(Math.Sin (DegreeToRadian (playerComm.angleRight[phonePlayer])) * playerComm.distanceRight[phonePlayer] / playerComm.stickSize[phonePlayer]);
 		
 		//Movement======================================================
 		if (leftStickHorizontal > analogStickTolerance)
